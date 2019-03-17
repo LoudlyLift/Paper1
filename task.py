@@ -1,6 +1,8 @@
 # so that we can reference the class by name within the class itself
 from __future__ import annotations
 
+import world
+
 import random
 
 class task:
@@ -18,9 +20,10 @@ class task:
         the most energy efficient manner possible (as long as it is still
         completed within sDelayMax seconds)
     """
-    def __init__(self, cbInput: int, cCycle: int, sDelayMax: float,
-                 timeenergy_ratio: float):
+    def __init__(self, world_: world.world, cbInput: int, cCycle: int,
+                 sDelayMax: float, timeenergy_ratio: float):
         self.cbInput = cbInput
         self.cCycle = cCycle
         self.sDelayMax = sDelayMax
         self.timeenergy_ratio = timeenergy_ratio
+        self.world_ = world_

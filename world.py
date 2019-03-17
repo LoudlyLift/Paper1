@@ -1,7 +1,6 @@
 import config
 import math
 import equipment
-import numpy
 
 class world:
     def __init__(self, bandwidth: float, cEquipment: int, N0: float):
@@ -10,7 +9,7 @@ class world:
         self._N0 = N0
         self._cEquipment = cEquipment
 
-        self._equipment = [config.newEquipment() for i in range(cEquipment)]
+        self._equipment = [config.newEquipment(self) for i in range(cEquipment)]
 
     def _compute_upload_rate(world, effective_bandwidth, equipment):
         """Computes the unscaled upload rate"""
@@ -27,6 +26,6 @@ class world:
 
         fun = lambda eq: self._compute_upload_rate(self,
                                                    effective_bandwidth=effective_bandwidth,
-                                                   eq)
+                                                   equipment=eq)
 
         return list(map(fun, offloaders))
