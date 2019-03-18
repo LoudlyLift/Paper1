@@ -5,15 +5,16 @@ import task
 import world
 
 class equipment:
-    def __init__(self, world_: world.world, power, gain, task_, frequency,
-                 energyPerCycle):
+    def __init__(self, world_: world.world, power: float, power_waiting: float,
+                 gain, task_, frequency, energyPerCycle, timeenergy_ratio: float):
+        self.world_ = world_
         self.power = power
+        self.power_waiting = power_waiting
         self.gain = gain
         self.task_ = task_
         self.frequency = frequency
         self.energyPerCycle = energyPerCycle
-        self.N0 = N0
-        self.world_ = world_
+        self.timeenergy_ratio = timeenergy_ratio
 
     def _compute_upload_rate(self, effective_bandwidth):
         """Computes the unscaled upload rate using the formula given in eq. (1)"""
@@ -31,10 +32,10 @@ class equipment:
         energy = self.task_.cCycle * self.energyPerCycle
 
         #eq. after (3) but before (4)
-        return time*self.task_.timeenergy_ratio \
-            + energy*(1-self.task_.timeenergy_ratio)
+        return time*self.timeenergy_ratio \
+            + energy*(1-self.timeenergy_ratio)
 
-    def cost_offload(self, cOffloaders: int, fracProcessor):
+    def cost_offload(self, cOffloaders: int, allocatedClockSpeed: float):
         effective_bandwidth = self.world_.bandwidth / cOffloaders
 
         # eq. (4)
@@ -45,4 +46,13 @@ class equipment:
         energy_offload = self.power * time_offload
 
         # eq. (6)
-        time_processing = self.fracProcessor *
+        time_processing = self.task_ / allocatedClockSpeed
+
+        # eq. (7)
+        energy_waiting = self.power_waiting * time_processing
+
+        # eq. (9)
+        time_total = time_offload + time_processing
+
+        # eq. (10)
+        energy_total = energy_offload + energy_waiting

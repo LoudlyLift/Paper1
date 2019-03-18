@@ -21,8 +21,7 @@ class task:
         completed within sDelayMax seconds)
     """
     def __init__(self, cbInput: int, cCycle: int,
-                 sDelayMax: float, timeenergy_ratio: float):
+                 sDelayMax: float):
         self.cbInput = cbInput
         self.cCycle = cCycle
         self.sDelayMax = sDelayMax
-        self.timeenergy_ratio = timeenergy_ratio
