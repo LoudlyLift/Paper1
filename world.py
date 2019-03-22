@@ -1,3 +1,4 @@
+import typing
 import config
 import math
 import equipment
@@ -12,7 +13,6 @@ class world:
         self.cEquipment = cEquipment
 
         self.equipment = [config.newEquipment(self) for i in range(cEquipment)]
-
 
     def computeCost(self, shouldOffloads, allocationWeights) -> float:
         """shouldOffloads is a boolean list of length cEquipment stating whether or not

@@ -46,3 +46,9 @@ def newEquipment(world) -> equipment.equipment:
                                task_=task_, frequency=freq,
                                energyPerCycle=energyPerCycle,
                                timeenergy_ratio=timeenergy_ratio)
+
+qtableConfig={"learning_rate": 0.3}
+
+future_discount=0.99
+
+world_config_num_cost_buckets=10
