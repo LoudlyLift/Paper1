@@ -42,8 +42,8 @@ class simulation:
 
         allocationWeights is a list of weights of what fraction of the MEC
         server's CPU a given task should get. Zero means compute
-        local. Otherwise it gets (weight / sum(allocationWeights)) of the MEC's
-        CPU.
+        local. Otherwise is offloaded using (weight / sum(allocationWeights)) of
+        the MEC's CPU.
 
         """
 
