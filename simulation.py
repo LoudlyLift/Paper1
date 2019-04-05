@@ -36,7 +36,7 @@ class simulation:
         """
         return self._equipment[i]
 
-    def computeCost(self, allocationWeights) -> float:
+    def computeCost(self, allocationWeights: typing.List[float]) -> float:
         """Computes the cost of allocating the MEC's CPU in the given proportion for the
         current scenario.
 

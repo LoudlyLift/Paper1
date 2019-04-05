@@ -40,9 +40,12 @@ class equipment:
         self.cCycle = cCycle
         self.sDelayMax = sDelayMax
 
-    def cost_local(self)->float:
+    def local_processing_time(self)->float:
         #eq. (2)
-        time   = self.cCycle / self.frequency
+        return self.cCycle / self.frequency
+
+    def cost_local(self)->float:
+        time = self.local_processing_time()
         #eq. (3)
         energy = self.cCycle * self.energyPerCycle
 

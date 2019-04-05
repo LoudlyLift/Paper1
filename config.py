@@ -1,6 +1,7 @@
-import random
-import numpy
 import math
+import numpy
+import random
+import typing
 
 import equipment
 import simulation
@@ -30,6 +31,16 @@ def newEquipment(args=None) -> equipment.equipment:
                                cbInput=cbInput, cCycle=cCycle,
                                sDelayMax=sDelayMax)
 
+class SmartSimulation(simulation.simulation):
+    def computeCost(self, allocationWeights: typing.List[float]) -> float:
+        #while True:
+        #failCount = 0
+        #for equipment in
+        #local_processing_time
+
+        allocationWeights[0] = 0
+        return simulation.simulation.computeCost(self, allocationWeights)
+
 def newSimulation() -> simulation.simulation:
     #given
     bandwidth=10e6
@@ -41,7 +52,7 @@ def newSimulation() -> simulation.simulation:
     #TMP
     cEquipment = 7
 
-    return simulation.simulation(bandwidth=bandwidth, cEquipment=cEquipment,
+    return SmartSimulation(bandwidth=bandwidth, cEquipment=cEquipment,
                                  mec_clockspeed=mec_clockspeed, N0=N0,
                                  consEquipment=newEquipment)
 
