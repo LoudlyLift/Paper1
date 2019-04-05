@@ -1,7 +1,5 @@
 import config
 import equipment
-import task
-import world
 import qlearning
 import qtable
 
