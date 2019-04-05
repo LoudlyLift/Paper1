@@ -1,4 +1,6 @@
 import random
+import numpy
+import math
 
 import equipment
 import simulation
@@ -13,11 +15,12 @@ def newEquipment() -> equipment.equipment:
     cbInput = random.randint(300, 500) * 1000
     cCycle = random.randint(900, 1100) * 1000000
 
-    #unused?
-    #pos=randomPosIn(radius=200m)
+    maxDistance = 200
+    distance = maxDistance * math.sqrt(random.random())
+    posTheta = random.random() * 2 * math.pi
 
     #TODO: the paper doesn't specify how to initalize these?
-    gain=10000
+    gain=numpy.random.rayleigh(distance)
     sDelayMax = random.random() * 30 + 15
 
     return equipment.equipment(power=power, power_waiting=power_waiting,
