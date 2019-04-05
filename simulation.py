@@ -13,7 +13,7 @@ class simulation:
         cEquipment -- the number of UEs
         mec_clockspeed -- MEC server's CPU clockspeed in GHz
         N0 -- ???
-        consEquipment -- a constructor that returns an equipment; first arg is world, keyword arg Args=consEquipmentArgs.
+        consEquipment -- a constructor that returns an equipment; one positional argument which is constEquipmentArgs
         """
         assert(cEquipment>0)
         self.bandwidth = bandwidth
@@ -29,7 +29,7 @@ class simulation:
         """Start a new scenario; reinitialize random variables.
 
         """
-        self._equipment = [self.consEquipment(self, self.consEquipmentArgs) for i in range(self.cEquipment)]
+        self._equipment = [self.consEquipment(self.consEquipmentArgs) for i in range(self.cEquipment)]
 
     def getEquipment(self, i):
         """Returns the i-th equipment

@@ -5,7 +5,7 @@ import math
 import equipment
 import simulation
 
-def newEquipment() -> equipment.equipment:
+def newEquipment(args=None) -> equipment.equipment:
     # values given in the paper
     power=500*1e-3
     power_waiting=100*1e-3
@@ -29,7 +29,6 @@ def newEquipment() -> equipment.equipment:
                                timeenergy_ratio=timeenergy_ratio,
                                cbInput=cbInput, cCycle=cCycle,
                                sDelayMax=sDelayMax)
-
 
 def newSimulation() -> simulation.simulation:
     #given
