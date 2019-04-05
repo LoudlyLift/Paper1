@@ -48,13 +48,8 @@ class simulation:
         """
         assert(len(allocationWeights) == self.cEquipment)
 
-        cOffloaded = 0
-        totalWeight = 0
-        for weight in allocationWeights:
-            assert(weight >= 0)
-            if weight > 0:
-                cOffloaded += 1
-                totalWeight += weight
+        cOffloaded = self.cEquipment - allocationWeights.count(0)
+        totalWeight = sum(allocationWeights)
 
         if cOffloaded != 0:
             allocatedBandwidth = self.bandwidth / cOffloaded
@@ -62,11 +57,14 @@ class simulation:
         #eq. (12), only with weights instead of ƒ
         total = 0
         for (equipment, weight) in zip(self._equipment, allocationWeights):
-            if weight > 0:
+            cost = 0
+            if weight == 0:
+                cost = equipment.cost_local()
+            else:
+                assert(weight > 0)
                 assert(totalWeight >= weight)
                 allocatedFreq = (weight / totalWeight) * self.mec_clockspeed
-                total += equipment.cost_offload(allocatedBandwidth, allocatedFreq, self.N0)
-            else:
-                total += equipment.cost_local()
+                cost = equipment.cost_offload(allocatedBandwidth, allocatedFreq, self.N0)
+            total += cost
 
         return total
