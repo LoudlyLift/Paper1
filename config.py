@@ -21,7 +21,7 @@ def newEquipment() -> equipment.equipment:
 
     #TODO: the paper doesn't specify how to initalize these?
     gain=numpy.random.rayleigh(distance)
-    sDelayMax = random.random() * 30 + 15
+    sDelayMax = random.random() * 0.4 + 0.8
 
     return equipment.equipment(power=power, power_waiting=power_waiting,
                                gain=gain, frequency=freq,
