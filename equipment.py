@@ -2,17 +2,29 @@ import math
 
 """
 
-cbInput -- the byte count of the input cCycle
+power -- power required to transmit data (watts)
 
-size -- the count of the number of CPU cycles it will take to compute this task
+power_waiting -- power required to await an incoming transmission (watts)
 
-sDelayMax -- maximum tolerable delay of the task, in seconds
+gain -- ???
+
+frequency -- this UE's clock speed (hertz)
+
+energyPerCycle -- energy consumed by each clock cycle (joules?)
 
 timeenergy_ratio -- the linear tradeoff to make between optimizing energy
 consumption and optimizing the time until completion. One means complete the
 task as soon as possible without regard to energy costs. Zero means that
 equipment's task is to be completed in the most energy efficient manner possible
 (as long as it is still completed within sDelayMax seconds).
+
+cbInput -- the byte count of the input cCycle
+
+cCycle -- the count of the number of CPU cycles it will take to compute this
+task
+
+sDelayMax -- maximum tolerable delay of the task, in seconds
+
 """
 class equipment:
     def __init__(self, power: float, power_waiting: float, gain, frequency:
