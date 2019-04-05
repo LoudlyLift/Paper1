@@ -55,12 +55,14 @@ class simulation:
                 cOffloaded += 1
                 totalWeight += weight
 
+        allocatedBandwidth = self.bandwidth / cOffloaded
+
         #eq. (12), only with weights instead of ƒ
         total = 0
         for (equipment, weight) in zip(self._equipment, allocationWeights):
             allocatedFreq = (weight / totalWeight) * self.mec_clockspeed
             if weight > 0:
-                total += equipment.cost_offload(cOffloaded, allocatedFreq)
+                total += equipment.cost_offload(allocatedBandwidth, allocatedFreq, self.N0)
             else:
                 total += equipment.cost_local()
 
