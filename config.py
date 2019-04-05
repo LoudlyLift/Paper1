@@ -1,51 +1,47 @@
 import random
 
-import task
 import equipment
-import world
+import simulation
 
-def newWorld() -> world.world:
+def newEquipment() -> equipment.equipment:
+    # values given in the paper
+    power=500*1e-3
+    power_waiting=100*1e-3
+    freq=1*1e9
+    energyPerCycle=1e-27 * (freq**2)
+    timeenergy_ratio = 0.5
+    cbInput = random.randint(300, 500) * 1000
+    cCycle = random.randint(900, 1100) * 1000000
+
+    #unused?
+    #pos=randomPosIn(radius=200m)
+
+    #TODO: the paper doesn't specify how to initalize these?
+    gain=10000
+    sDelayMax = random.random() * 30 + 15
+
+    return equipment.equipment(power=power, power_waiting=power_waiting,
+                               gain=gain, frequency=freq,
+                               energyPerCycle=energyPerCycle,
+                               timeenergy_ratio=timeenergy_ratio,
+                               cbInput=cbInput, cCycle=cCycle,
+                               sDelayMax=sDelayMax)
+
+
+def newSimulation() -> simulation.simulation:
     #given
     bandwidth=10e6
     mec_clockspeed=5e9
 
     #idk
-    cEquipment = 7
     N0 = 123
 
-    return world.world(bandwidth=10e6, cEquipment=cEquipment, mec_clockspeed=mec_clockspeed, N0=N0)
+    #TMP
+    cEquipment = 7
 
-def newTask() -> task.task:
-    # values given in the paper
-    cbInput = random.randint(300, 500) * 1000
-    cCycle = random.randint(900, 1100) * 1000000
-
-    # TODO: the paper doesn't specify how to initialize this?
-    sDelayMax = 10000
-
-    return task.task(cbInput=cbInput, cCycle=cCycle,
-                     sDelayMax=sDelayMax)
-
-def newEquipment(world) -> equipment.equipment:
-    # values given in the paper
-    power=500*1e-3
-    power_waiting=100*1e-3
-    task_=newTask()
-    freq=1*1e9
-    energyPerCycle=1e-27 * (freq**2)
-    timeenergy_ratio = 0.5
-
-    #unused?
-    #pos=randomPosIn(radius=200m)
-
-    #TODO: the paper doesn't specify how to initalize gain?
-    gain=10000
-
-    return equipment.equipment(world_=world, power=power,
-                               power_waiting=power_waiting, gain=gain,
-                               task_=task_, frequency=freq,
-                               energyPerCycle=energyPerCycle,
-                               timeenergy_ratio=timeenergy_ratio)
+    return simulation.simulation(bandwidth=bandwidth, cEquipment=cEquipment,
+                                 mec_clockspeed=mec_clockspeed, N0=N0,
+                                 consEquipment=newEquipment)
 
 qtableConfig={"learning_rate": 0.3}
 

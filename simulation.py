@@ -21,7 +21,7 @@ class simulation:
         self.mec_clockspeed = mec_clockspeed
         self.N0 = N0
         self.cEquipment = cEquipment
-        self.consEquipment = consEqupment
+        self.consEquipment = consEquipment
         self.consEquipmentArgs = consEquipmentArgs
 
         self.reinitialize()
@@ -50,19 +50,19 @@ class simulation:
 
         cOffloaded = 0
         totalWeight = 0
-        for (isOffloaded, weight) in zip(shouldOffloads, allocationWeights):
-            if isOffloaded:
+        for weight in allocationWeights:
+            assert(weight >= 0)
+            if weight > 0:
                 cOffloaded += 1
                 totalWeight += weight
 
         #eq. (12), only with weights instead of ƒ
         total = 0
-        for (equipment, isOffloaded, allocationWeight) \
-            in zip(self._equipment, shouldOffloads, allocationWeights):
-            allocatedFreq = (allocationWeight / totalWeight) * \
-                self.mec_clockspeed
-            total += isOffloaded * equipment.cost_offload(cOffloaded,
-                                                          allocatedFreq)
-            total += (1-isOffloaded) * equipment.cost_local()
+        for (equipment, weight) in zip(self._equipment, allocationWeights):
+            allocatedFreq = (weight / totalWeight) * self.mec_clockspeed
+            if weight > 0:
+                total += equipment.cost_offload(cOffloaded, allocatedFreq)
+            else:
+                total += equipment.cost_local()
 
         return total

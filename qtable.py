@@ -2,10 +2,6 @@ import typing
 import numpy
 import math
 
-import task
-import equipment
-import world
-
 class qtable:
     """See qlearning.py for the definitions of state_metadata, state, and qValues
     """

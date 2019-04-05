@@ -1,8 +1,4 @@
-from __future__ import annotations
-
-import random
-import task
-import world
+import math
 
 """
 
@@ -32,16 +28,16 @@ class equipment:
         self.cCycle = cCycle
         self.sDelayMax = sDelayMax
 
-    def _compute_upload_rate(self, effective_bandwidth, N0):
+    def _compute_upload_rate(self, effective_bandwidth: float, N0: float)->float:
         """Computes the unscaled upload rate using the formula given in eq. (1)"""
-        num=self._power*self._gain
+        num=self.power*self.gain
         dem=effective_bandwidth*N0
         quotient=num/dem
 
         #TODO: log_e, I presume?
         return effective_bandwidth * math.log(1+quotient)
 
-    def cost_local(self):
+    def cost_local(self)->float:
         #eq. (2)
         time   = self.cCycle / self.frequency
         #eq. (3)
@@ -52,10 +48,10 @@ class equipment:
             + energy*(1-self.timeenergy_ratio)
 
     def cost_offload(self, effective_bandwidth: float, cOffloaders: int,
-                     allocatedClockSpeed: float):
+                     allocatedClockSpeed: float, N0: float)->float:
         # eq. (4)
         time_offload = self.cbInput / \
-            self._compute_upload_rate(effective_bandwidth)
+            self._compute_upload_rate(effective_bandwidth, N0)
 
         # eq. (5)
         energy_offload = self.power * time_offload
@@ -71,3 +67,7 @@ class equipment:
 
         # eq. (10)
         energy_total = energy_offload + energy_waiting
+
+        # eq. (11)
+        return time_total*self.timeenergy_ratio \
+            + energy_total*(1-self.timeenergy_ratio)
