@@ -6,7 +6,8 @@ import world
 
 class equipment:
     def __init__(self, world_: world.world, power: float, power_waiting: float,
-                 gain, task_, frequency, energyPerCycle, timeenergy_ratio: float):
+                 gain, task_, frequency: float, energyPerCycle: float,
+                 timeenergy_ratio: float):
         self.world_ = world_
         self.power = power
         self.power_waiting = power_waiting
