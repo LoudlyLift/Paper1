@@ -36,7 +36,7 @@ def newSimulation() -> simulation.simulation:
     mec_clockspeed=5e9
 
     #idk
-    N0 = 123
+    N0 = 1e-4
 
     #TMP
     cEquipment = 7
