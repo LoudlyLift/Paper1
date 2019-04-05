@@ -1,5 +1,4 @@
 import typing
-import config
 import math
 import equipment
 
