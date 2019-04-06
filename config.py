@@ -65,10 +65,30 @@ class SmartSimulation(simulation.simulation):
         buckets = numpy.array(initialBuckets)
         weights = numpy.array(weights)
 
+        THRESHOLD = 1e-9
+
         while additional > 0:
-            #TODO
-            buckets[0] += additional
-            additional = 0
+            ratio = buckets/weights
+
+            minRatio = min(ratio)
+
+            nonminRatios = [r for r in ratio if r > minRatio + THRESHOLD]
+            if len(nonminRatios) == 0:
+                targetRatio = math.inf
+            else:
+                targetRatio = min(nonminRatios)
+
+            deltaRatio = targetRatio - minRatio
+
+            selectedIndicies = numpy.where(ratio < minRatio + THRESHOLD)[0]
+            sumWeights = sum(weights[i] for i in selectedIndicies)
+
+            usedWater = deltaRatio * sumWeights
+            usedWater = min(usedWater, additional)
+
+            for i in selectedIndicies:
+                buckets[i] += usedWater * (weights[i] / sumWeights)
+            additional -= usedWater
 
         return buckets
 
