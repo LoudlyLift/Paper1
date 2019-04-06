@@ -33,7 +33,7 @@ def newEquipment(args=None) -> equipment.equipment:
 
 class SmartSimulation(simulation.simulation):
     @staticmethod
-    def weightedDistribution(additional: float, buckets: typing.List[float], weights: typing.List[float]) -> typing.List[float]:
+    def weightedDistribution(additional: float, initialBuckets: typing.List[float], weights: typing.List[float]) -> typing.List[float]:
         """Metaphorically speaking, we have a list of buckets that each contains some
         quantity of water. We want the proportion of water in each bucket to
         match the proportions given in the weights list, but we cannot remove
@@ -47,7 +47,7 @@ class SmartSimulation(simulation.simulation):
 
         -- additional: the number that is distributed among the buckets; additional ≥ 0
 
-        -- buckets: the initial values; buckets[i] ≥ 0 ∀ i
+        -- initialBuckets: the initial values; buckets[i] ≥ 0 ∀ i
 
         -- weights: the desired ratio between the elements of buckets; weights[i] > 0 ∀ i
 
@@ -58,10 +58,12 @@ class SmartSimulation(simulation.simulation):
 
         minimize (max(weightedQuantity) - min(weightedQuantity)) such that:
 
-        => sum(result) == additional + sum(buckets)
+        => sum(result) == additional + sum(initialBuckets)
 
-        => result[i] ≥ buckets[i] ∀ i
+        => result[i] ≥ initialBuckets[i] ∀ i
         """
+        buckets = numpy.array(initialBuckets)
+        weights = numpy.array(weights)
 
         while additional > 0:
             #TODO
