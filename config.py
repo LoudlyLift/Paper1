@@ -62,8 +62,8 @@ class SmartSimulation(simulation.simulation):
 
         => result[i] ≥ initialBuckets[i] ∀ i
         """
-        buckets = numpy.array(initialBuckets)
-        weights = numpy.array(weights)
+        buckets = numpy.array(initialBuckets, dtype=float)
+        weights = numpy.array(weights, dtype=float)
 
         THRESHOLD = 1e-9
 
