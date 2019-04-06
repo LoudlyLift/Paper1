@@ -32,13 +32,83 @@ def newEquipment(args=None) -> equipment.equipment:
                                sDelayMax=sDelayMax)
 
 class SmartSimulation(simulation.simulation):
-    def computeCost(self, allocationWeights: typing.List[float]) -> float:
-        #while True:
-        #failCount = 0
-        #for equipment in
-        #local_processing_time
+    @staticmethod
+    def weightedDistribution(additional: float, buckets: typing.List[float], weights: typing.List[float]) -> typing.List[float]:
+        """Metaphorically speaking, we have a list of buckets that each contains some
+        quantity of water. We want the proportion of water in each bucket to
+        match the proportions given in the weights list, but we cannot remove
+        any water from the buckets. We have `additional` units of extra water,
+        which we can add to any of the buckets. We must use all of this extra
+        water.
 
-        allocationWeights[0] = 0
+        More formally:
+
+        Args:
+
+        -- additional: the number that is distributed among the buckets; additional ≥ 0
+
+        -- buckets: the initial values; buckets[i] ≥ 0 ∀ i
+
+        -- weights: the desired ratio between the elements of buckets; weights[i] > 0 ∀ i
+
+        let weightedQuantity = numpy.divide(result, weights)
+
+        The list we return is the (unique) solution to this optimization
+        problem:
+
+        minimize (max(weightedQuantity) - min(weightedQuantity)) such that:
+
+        => sum(result) == additional + sum(buckets)
+
+        => result[i] ≥ buckets[i] ∀ i
+        """
+
+        while additional > 0:
+            #TODO
+            buckets[0] += additional
+            additional = 0
+
+        return buckets
+
+    def computeCost(self, allocationWeights: typing.List[float]) -> float:
+        # rescale such that weights sum to one
+        inital_sum = sum(allocationWeights)
+        assert(initial_sum >= 0)
+        if initial_sum != 0:
+            allocationWeights = list(map(lambda v: v / initial_sum, allocationWeights))
+
+        forceOffload = [ False ] * self.cEquipment
+        for i in range(self.cEquipment):
+            eq = self._equipment[i]
+
+            if allocationWeights[i] > 0 or eq.local_processing_time() > eq.sDelayMax:
+                forceOffload[i] = True
+
+        cOffload = sum(forceOffload)
+        if cOffload == 0:
+            return simulation.simulation.computeCost(self, allocationWeights)
+        allocatedBandwidth = self.bandwidth / cOffload
+
+        minFrac = [ 0 ] * self.cEquipment
+        for i in range(self.cEquipment):
+            if not forceOffload[i]:
+                minFrac[i] = 0
+                continue
+            eq = self._equipment[i]
+            upload_rate = eq.uploadRate(allocatedBandwidth, self.N0)
+            minHtz = eq.cCycle / (eq.sDelayMax - (eq.cbInput/upload_rate))
+            minFrac[i] = minHtz / self.frequency
+
+        offloadIndicies = numpy.array(forceOffload).nonzero()[0]
+
+        offloadMins = list(map(lambda i: minFrac[i], offloadIndicies))
+        offloadWeight = list(map(lambda i: minFrac[i], offloadIndicies))
+
+        min_sum = sum(offloadMins)
+        assert(min_sum <= 1)
+
+        allocationWeights = weightedDistribution(1 - min_sum, minFrac, allocationWeights)
+
         return simulation.simulation.computeCost(self, allocationWeights)
 
 def newSimulation() -> simulation.simulation:

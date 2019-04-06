@@ -52,6 +52,13 @@ class equipment:
         #eq. after (3) but before (4)
         return time*self.timeenergy_ratio + energy*(1-self.timeenergy_ratio)
 
+    def upload_rate(self, bandwidth: float, N0: float):
+        # eq. (1)
+        numerator=self.power*self.gain
+        denominator=bandwidth*N0
+        quotient=numerator/denominator
+        return bandwidth * math.log(1+quotient)
+
     def cost_offload(self, bandwidth: float, effectiveServerClockSpeed: float, N0: float)->float:
         """Computes the cost of offloading this equipment's task
 
@@ -62,15 +69,8 @@ class equipment:
         N0 -- ???
         """
 
-        # eq. (1)
-        numerator=self.power*self.gain
-        denominator=bandwidth*N0
-        quotient=numerator/denominator
-        upload_rate = bandwidth * math.log(1+quotient)
-
-
         # eq. (4)
-        time_offload = self.cbInput / upload_rate
+        time_offload = self.cbInput / self.upload_rate(bandwidth, N0)
 
         # eq. (5)
         energy_offload = self.power * time_offload
