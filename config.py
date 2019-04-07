@@ -113,7 +113,7 @@ class SmartSimulation(simulation.simulation):
             return simulation.simulation.computeCost(self, allocationWeights)
         allocatedBandwidth = self.bandwidth / cOffload
 
-        minFrac = [ 0 ] * self.cEquipment
+        minFrac = [ 0.0 ] * self.cEquipment
         for i in range(self.cEquipment):
             if not forceOffload[i]:
                 minFrac[i] = 0
