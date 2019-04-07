@@ -81,9 +81,14 @@ class alg1_world:
         #"invalid" moves are made valid by the preclassification step
         return random.randint(0, self.getNumActions()-1)
 
+    def actionFromIndexaction(self, indexaction:int):
+        return list(self.possibleActions[indexaction])
+
     def step(self, action):
-        action = list(self.possibleActions[action])
+        action = self.actionFromIndexaction(action)
+
         cost = self.simulation.computeCost(action)
+        self._prior_cost = cost
 
         costBucket = math.floor(self.granularityTC * (cost-self.minCost) / (self.maxCost - self.minCost))
         costBucket = min(costBucket, self.granularityTC - 1)
@@ -110,3 +115,6 @@ class alg1_world:
     def getLegalMoves(self):
         #"invalid" moves are made valid by the preclassification step
         return [True] * len(self.possibleActions)
+
+    def closeEpisode(self):
+        return {"min": self.minCost, "max": self.maxCost, "local": self.localCost, "actual": self._prior_cost}

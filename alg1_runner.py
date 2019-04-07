@@ -5,6 +5,7 @@ import config
 import equipment
 import qlearning
 import qtable
+import statistics
 
 s = config.newSimulation()
 
@@ -18,12 +19,19 @@ ql = qlearning.qlearning(env=w,
 
 t1 = time.time()
 
-ql.train(100)
+ql.train(1000)
 
 t2 = time.time()
 
-print(t2-t1)
-
-print(ql.getTrainUpdateCount())
-
+print(f"Training duration: {t2-t1}") # approx 25 seconds
+print(f"Number of updates: {ql.getTrainUpdateCount()}") # approx 5k
 #5333 updates / 25 sec == 213 updates / sec
+
+results = ql.evaluate(100)
+
+avgmin    = statistics.mean(result["min"]    for result in results)
+avgmax    = statistics.mean(result["max"]    for result in results)
+avglocal  = statistics.mean(result["local"]  for result in results)
+avgactual = statistics.mean(result["actual"] for result in results)
+
+print(f"min: {avgmin}; max: {avgmax}; local: {avglocal}; actual: {avgactual}")

@@ -41,6 +41,8 @@ class qlearning:
         entries are False if the move is illegal, and true if
         legal. (Equivalently, could be a list of zero/one)
 
+        closeEpisode(): returns the result of the episode
+
     compute_randact(episode_num): given the episode number, this computes
     probability with which a random move should be made instead of action
     chosen.
@@ -64,33 +66,42 @@ class qlearning:
         self._future_discount = future_discount
 
         state_metadata = env.getStateMetadata()
-        self._player = consPlayer(state_metadata, self._env.getNumActions(), config=player_config)
+        self.player = consPlayer(state_metadata, self._env.getNumActions(), config=player_config)
 
         self._train_update_count = 0
         self._train_episode_count = 0
 
     def evaluate(self, count):
-        return self._runEpisodes(count, learn=False)
+        """runs count episodes without updating Q-values.
 
-    # runs count episodes.
-    #
-    # returns [ Σ(episode i's rewards) for i in range(count) ]
+        returns a list of the things returned by closeEpisode
+
+        """
+        return self._runEpisodes(count, training=False)
+
     def train(self, count):
-        return self._runEpisodes(count, learn=True)
+        """runs count episodes while updating Q-Values.
 
-    def _runEpisodes(self, count, learn):
-        reward_sums = []
+        returns a list of the things returned by closeEpisode
+
+        """
+        return self._runEpisodes(count, training=True)
+
+    def _runEpisodes(self, count, training, log=True):
+        results = []
         cStep = 0
-        for ep_num in range(1, count+1):
+        for i in range(count):
+            if log:
+                print(f"{i} / {count}")
             try:
                 state_old = self._env.reset()
                 reward_sum = 0
                 done = False
 
                 while not done:
-                    allActQs = self._player.computeQState(state_old)
-                    doRandom = numpy.random.rand(1) < self._compute_randact(ep_num)
-                    if doRandom:
+                    allActQs = self.player.computeQState(state_old)
+                    doRandom = numpy.random.rand(1) < self._compute_randact(self._train_episode_count)
+                    if doRandom and training:
                         act = self._env.getRandomMove()
                     else:
                         legalMoves = self._env.getLegalMoves()
@@ -98,26 +109,27 @@ class qlearning:
 
                     state_new,reward,done = self._env.step(act)
 
-                    if learn:
+                    if training:
                         if done:
                             maxHypotheticalQ = 0
                         else:
-                            qvals = self._player.computeQState(state_new)
+                            qvals = self.player.computeQState(state_new)
                             legalMoves = self._env.getLegalMoves()
                             maxHypotheticalQ = bestLegalMove(qvals, legalMoves)
                         allActQs[act] = reward + self._future_discount * maxHypotheticalQ
-                        self._player.updateQState(cStep, state_old, allActQs)
+                        self.player.updateQState(cStep, state_old, allActQs)
                         self._train_update_count += 1
 
                     reward_sum += reward
                     state_old = state_new
                     cStep += 1
-                reward_sums.append(reward_sum)
+
+                results.append(self._env.closeEpisode())
                 self._train_episode_count += 1
             except KeyboardInterrupt as e:
                 print("Keyboard Interrupt")
                 break
-        return reward_sums
+        return results
 
     def getTrainUpdateCount(self):
         return self._train_update_count
