@@ -47,7 +47,7 @@ class alg1_world:
 
         return ret
 
-    def __init__(self, simulation: simulation.simulation, granularityTC=8, granularityAC=8, granularityMEC = None):
+    def __init__(self, simulation: simulation.simulation, granularityTC=8, granularityMEC = None):
         self.simulation = simulation
 
         if granularityMEC is None:
@@ -55,7 +55,6 @@ class alg1_world:
         self.granularityMEC = granularityMEC
 
         self.granularityTC = granularityTC
-        self.granularityAC = granularityAC
 
         self.possibleActions = list(alg1_world.allocations(cItem=simulation.cEquipment, cBucket=simulation.cEquipment))
 
@@ -86,10 +85,10 @@ class alg1_world:
         action = list(self.possibleActions[action])
         cost = self.simulation.computeCost(action)
 
-        costBucket = math.floor(self.granularityAC * (cost-self.minCost) / (self.maxCost - self.minCost))
-        costBucket = min(costBucket, self.granularityAC - 1)
+        costBucket = math.floor(self.granularityTC * (cost-self.minCost) / (self.maxCost - self.minCost))
+        costBucket = min(costBucket, self.granularityTC - 1)
 
-        acBucket = self.granularityAC - sum(action)
+        acBucket = self.granularityMEC - sum(action)
 
         state = (costBucket, acBucket)
 
@@ -103,7 +102,7 @@ class alg1_world:
         return (state, reward, done)
 
     def getStateMetadata(self):
-        return (self.granularityTC, self.granularityAC)
+        return (self.granularityTC, self.granularityMEC+1) #+1 because legal values are [0, granularityMEC]
 
     def getNumActions(self):
         return len(self.possibleActions)
