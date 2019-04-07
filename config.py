@@ -22,7 +22,9 @@ def newEquipment(args=None) -> equipment.equipment:
 
     #TODO: the paper doesn't specify how to initalize these?
     gain=numpy.random.rayleigh(distance)
-    sDelayMax = random.random() * 0.4 + 0.8
+    sDelayMax = 10000 #when offloading, just uploading can take 25+ seconds
+                      #depending on randomness... (All tasks can be processed
+                      #locally in < 1.5 sec...)
 
     return equipment.equipment(power=power, power_waiting=power_waiting,
                                gain=gain, frequency=freq,
@@ -94,7 +96,7 @@ class SmartSimulation(simulation.simulation):
 
     def computeCost(self, allocationWeights: typing.List[float]) -> float:
         # rescale such that weights sum to one
-        inital_sum = sum(allocationWeights)
+        initial_sum = sum(allocationWeights)
         assert(initial_sum >= 0)
         if initial_sum != 0:
             allocationWeights = list(map(lambda v: v / initial_sum, allocationWeights))
@@ -117,9 +119,12 @@ class SmartSimulation(simulation.simulation):
                 minFrac[i] = 0
                 continue
             eq = self._equipment[i]
-            upload_rate = eq.uploadRate(allocatedBandwidth, self.N0)
-            minHtz = eq.cCycle / (eq.sDelayMax - (eq.cbInput/upload_rate))
-            minFrac[i] = minHtz / self.frequency
+            upload_rate = eq.upload_rate(allocatedBandwidth, self.N0)
+            max_proccessingSeconds = (eq.sDelayMax - (eq.cbInput/upload_rate))
+            if (max_proccessingSeconds <= 0):
+                import pdb; pdb.set_trace()
+            minHtz = eq.cCycle / max_proccessingSeconds
+            minFrac[i] = minHtz / self.mec_clockspeed
 
         offloadIndicies = numpy.array(forceOffload).nonzero()[0]
 
@@ -129,7 +134,7 @@ class SmartSimulation(simulation.simulation):
         min_sum = sum(offloadMins)
         assert(min_sum <= 1)
 
-        allocationWeights = weightedDistribution(1 - min_sum, minFrac, allocationWeights)
+        allocationWeights = SmartSimulation.weightedDistribution(1 - min_sum, minFrac, allocationWeights)
 
         return simulation.simulation.computeCost(self, allocationWeights)
 

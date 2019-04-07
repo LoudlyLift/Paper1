@@ -1,6 +1,7 @@
-import typing
-import math
 import equipment
+import math
+import numpy
+import typing
 
 
 """Constructed once, re-randomized for each run.
@@ -48,7 +49,7 @@ class simulation:
         """
         assert(len(allocationWeights) == self.cEquipment)
 
-        cOffloaded = self.cEquipment - allocationWeights.count(0)
+        cOffloaded = numpy.count_nonzero(allocationWeights)
         totalWeight = sum(allocationWeights)
 
         if cOffloaded != 0:
