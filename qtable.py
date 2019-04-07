@@ -13,7 +13,7 @@ class qtable:
     def computeQState(self, state):
         return self._table[state]
 
-    def updateQState(self, state, qValues):
+    def updateQState(self, _, state, qValues):
         lr = self._learning_rate
         val = self._table[state]
 

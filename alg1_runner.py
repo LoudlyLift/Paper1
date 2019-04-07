@@ -1,3 +1,6 @@
+import time
+
+import alg1_world
 import config
 import equipment
 import qlearning
@@ -5,18 +8,20 @@ import qtable
 
 s = config.newSimulation()
 
-s.computeCost([1,1,2,3,4,5,6])
+w = alg1_world.alg1_world(s)
+
+ql = qlearning.qlearning(env=w,
+                         compute_randact=lambda episodeNum: 0.1,
+                         consPlayer=qtable.qtable,
+                         player_config=config.qtableConfig,
+                         future_discount=config.future_discount)
+
+t1 = time.time()
+
+ql.train(100)
+
+t2 = time.time()
 
 
 
-
-
-#w = config.newWorld()
-#
-#ql = qlearning.qlearning(env=w,
-#                         compute_randact=lambda episodeNum: 0.1,
-#                         consPlayer=qtable.qtable,
-#                         player_config=config.qtableConfig,
-#                         future_discount=config.future_discount)
-#
-#ql.runEpisodes(10)
+print(t2-t1)

@@ -17,14 +17,15 @@ def bestLegalMove(qvals, legality):
 class qlearning:
     """env state must be a tuple; no lists, no matricies, etc. A simple tuple of
     integers, and all integers in the range [0, max) must be valid, where max is
-    the corresponding value from getStateMetadata.
+    the corresponding value from getStateMetadata. Moves must be representing by
+    the integers [0, getNumActions()], however.
 
     env must define these methods:
 
         reset(self): resets env for a new game (including the first), and
         returns the starting state.
 
-        getRandomMove(self): get a random move
+        getRandomMove(self): get a random move.
 
         step(self, int): perform the specified move and return the tuple
             (state_new,reward,done).
@@ -34,7 +35,7 @@ class qlearning:
         entry can take in the actual state vector.
 
         getNumActions(): returns the number of actions that can be made at
-        any given time
+        any given time.
 
         getLegalMoves(): returns a list of length == getNumActions(), whose
         entries are False if the move is illegal, and true if
@@ -67,8 +68,8 @@ class qlearning:
 
     # runs count episodes.
     #
-    # Returns (player, [ Σ(episode i's rewards) for i in range(count) ])
-    def runEpisodes(self, count=1):
+    # returns [ Σ(episode i's rewards) for i in range(count) ]
+    def train(self, count=1):
         reward_sums = []
         cStep = 0
         for ep_num in range(1, count+1):
@@ -103,4 +104,4 @@ class qlearning:
             except KeyboardInterrupt as e:
                 print("Keyboard Interrupt")
                 break
-        return (self._player, reward_sums)
+        return reward_sums
