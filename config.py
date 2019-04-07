@@ -22,9 +22,9 @@ def newEquipment(args=None) -> equipment.equipment:
 
     #TODO: the paper doesn't specify how to initalize these?
     gain=numpy.random.rayleigh(distance)
-    sDelayMax = 10000 #when offloading, just uploading can take 25+ seconds
-                      #depending on randomness... (All tasks can be processed
-                      #locally in < 1.5 sec...)
+    sDelayMax = 500 #when offloading, just uploading can take 25+ seconds
+                    #depending on randomness... (All tasks can be processed
+                    #locally in < 1.5 sec...)
 
     return equipment.equipment(power=power, power_waiting=power_waiting,
                                gain=gain, frequency=freq,
@@ -69,6 +69,8 @@ class SmartSimulation(simulation.simulation):
 
         THRESHOLD = 1e-9
 
+        assert(numpy.count_nonzero(buckets) == len(buckets))
+
         while additional > 0:
             ratio = buckets/weights
 
@@ -99,7 +101,7 @@ class SmartSimulation(simulation.simulation):
         initial_sum = sum(allocationWeights)
         assert(initial_sum >= 0)
         if initial_sum != 0:
-            allocationWeights = list(map(lambda v: v / initial_sum, allocationWeights))
+            allocationWeights = [ v / initial_sum for v in allocationWeights ]
 
         forceOffload = [ False ] * self.cEquipment
         for i in range(self.cEquipment):
@@ -121,20 +123,22 @@ class SmartSimulation(simulation.simulation):
             eq = self._equipment[i]
             upload_rate = eq.upload_rate(allocatedBandwidth, self.N0)
             max_proccessingSeconds = (eq.sDelayMax - (eq.cbInput/upload_rate))
-            if (max_proccessingSeconds <= 0):
-                import pdb; pdb.set_trace()
+            assert(max_proccessingSeconds > 0)
             minHtz = eq.cCycle / max_proccessingSeconds
             minFrac[i] = minHtz / self.mec_clockspeed
 
         offloadIndicies = numpy.array(forceOffload).nonzero()[0]
 
-        offloadMins = list(map(lambda i: minFrac[i], offloadIndicies))
-        offloadWeight = list(map(lambda i: minFrac[i], offloadIndicies))
+        offloadMins = [ minFrac[i] for i in offloadIndicies ]
+        offloadWeights = [ allocationWeights[i] for i in offloadIndicies ]
 
         min_sum = sum(offloadMins)
         assert(min_sum <= 1)
 
-        allocationWeights = SmartSimulation.weightedDistribution(1 - min_sum, minFrac, allocationWeights)
+        offloadWeights = SmartSimulation.weightedDistribution(1 - min_sum, offloadMins, offloadWeights)
+
+        for (iOffload, iGlobal) in enumerate(offloadIndicies):
+            allocationWeights[iGlobal] = offloadWeights[iOffload]
 
         return simulation.simulation.computeCost(self, allocationWeights)
 
@@ -155,6 +159,6 @@ def newSimulation() -> simulation.simulation:
 
 qtableConfig={"learning_rate": 0.3}
 
-future_discount=0.99
+future_discount=0.5
 
 world_config_num_cost_buckets=10
