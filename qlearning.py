@@ -66,10 +66,16 @@ class qlearning:
         state_metadata = env.getStateMetadata()
         self._player = consPlayer(state_metadata, self._env.getNumActions(), config=player_config)
 
+    def evaluate(self, count):
+        return self._runEpisodes(count, learn=False)
+
     # runs count episodes.
     #
     # returns [ Σ(episode i's rewards) for i in range(count) ]
-    def train(self, count=1):
+    def train(self, count):
+        return self._runEpisodes(count, learn=True)
+
+    def _runEpisodes(self, count, learn):
         reward_sums = []
         cStep = 0
         for ep_num in range(1, count+1):
@@ -88,14 +94,16 @@ class qlearning:
                         act = bestLegalMove(allActQs, legalMoves)
 
                     state_new,reward,done = self._env.step(act)
-                    if done:
-                        maxHypotheticalQ = 0
-                    else:
-                        qvals = self._player.computeQState(state_new)
-                        legalMoves = self._env.getLegalMoves()
-                        maxHypotheticalQ = bestLegalMove(qvals, legalMoves)
-                    allActQs[act] = reward + self._future_discount * maxHypotheticalQ
-                    self._player.updateQState(cStep, state_old, allActQs)
+
+                    if learn:
+                        if done:
+                            maxHypotheticalQ = 0
+                        else:
+                            qvals = self._player.computeQState(state_new)
+                            legalMoves = self._env.getLegalMoves()
+                            maxHypotheticalQ = bestLegalMove(qvals, legalMoves)
+                        allActQs[act] = reward + self._future_discount * maxHypotheticalQ
+                        self._player.updateQState(cStep, state_old, allActQs)
 
                     reward_sum += reward
                     state_old = state_new
