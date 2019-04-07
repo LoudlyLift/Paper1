@@ -9,14 +9,20 @@ class qtable:
     def __init__(self, state_metadata: typing.Tuple[int, ...], num_actions: int, config=None):
         self._table = numpy.zeros(state_metadata + (num_actions,))
         self._learning_rate = config['learning_rate']
+        self._update_count = 0
 
     def computeQState(self, state):
         return self._table[state]
 
     def updateQState(self, _, state, qValues):
+        self._update_count += 1
+
         lr = self._learning_rate
         val = self._table[state]
 
         val = (1 - lr) * val + lr * qValues
 
         self._table[state] = val
+
+    def getUpdateCount(self):
+        return self._update_count

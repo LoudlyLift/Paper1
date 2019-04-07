@@ -22,6 +22,8 @@ ql.train(100)
 
 t2 = time.time()
 
-
-
 print(t2-t1)
+
+print(ql.getTrainUpdateCount())
+
+#5333 updates / 25 sec == 213 updates / sec

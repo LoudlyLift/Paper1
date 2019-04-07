@@ -66,6 +66,9 @@ class qlearning:
         state_metadata = env.getStateMetadata()
         self._player = consPlayer(state_metadata, self._env.getNumActions(), config=player_config)
 
+        self._train_update_count = 0
+        self._train_episode_count = 0
+
     def evaluate(self, count):
         return self._runEpisodes(count, learn=False)
 
@@ -104,12 +107,20 @@ class qlearning:
                             maxHypotheticalQ = bestLegalMove(qvals, legalMoves)
                         allActQs[act] = reward + self._future_discount * maxHypotheticalQ
                         self._player.updateQState(cStep, state_old, allActQs)
+                        self._train_update_count += 1
 
                     reward_sum += reward
                     state_old = state_new
                     cStep += 1
                 reward_sums.append(reward_sum)
+                self._train_episode_count += 1
             except KeyboardInterrupt as e:
                 print("Keyboard Interrupt")
                 break
         return reward_sums
+
+    def getTrainUpdateCount(self):
+        return self._train_update_count
+
+    def getTrainEpisodeCount(self):
+        return self._train_episode_count
