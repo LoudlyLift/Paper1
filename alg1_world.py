@@ -88,7 +88,6 @@ class alg1_world:
         action = self.actionFromIndexaction(action)
 
         cost = self.simulation.computeCost(action)
-        self._prior_cost = cost
 
         costBucket = math.floor(self.granularityTC * (cost-self.minCost) / (self.maxCost - self.minCost))
         costBucket = min(costBucket, self.granularityTC - 1)
@@ -101,8 +100,10 @@ class alg1_world:
         reward = (self.localCost - cost) / (self.localCost)
 
         done = (self.iterCount == 1000) or (self.stateLast is not None and state == self.stateLast)
+
         self.stateLast = state
         self.iterCount += 1
+        self._prior_cost = cost
 
         return (state, reward, done)
 

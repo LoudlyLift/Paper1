@@ -153,6 +153,7 @@ class SmartSimulation(simulation.simulation):
             minHtz = eq.cCycle / max_proccessingSeconds
             minFrac[i] = minHtz / self.mec_clockspeed
             if max_proccessingSeconds <= 0:
+                #TODO: should we just cap the gain instead of doing this?
                 minFrac[i] = 1
 
         offloadIndicies = numpy.array(forceOffload).nonzero()[0]
@@ -161,7 +162,8 @@ class SmartSimulation(simulation.simulation):
         offloadWeights = [ allocationWeights[i] for i in offloadIndicies ]
 
         min_sum = sum(offloadMins)
-        assert(min_sum <= 1)
+        if (min_sum > 1):
+            print("WARNING: impossible scenario; min_sum > 1")
 
         offloadWeights = SmartSimulation.weightedDistribution(1 - min_sum, offloadMins, offloadWeights)
 
