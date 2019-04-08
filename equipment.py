@@ -29,7 +29,7 @@ sDelayMax -- maximum tolerable delay of the task, in seconds
 class equipment:
     def __init__(self, power: float, power_waiting: float, gain, frequency:
                  float, energyPerCycle: float, timeenergy_ratio: float, cbInput:
-                 int, cCycle: int, sDelayMax: float):
+                 int, cCycle: int, sDelayMax: float, distance: float):
         self.power = power
         self.power_waiting = power_waiting
         self.gain = gain
@@ -39,6 +39,7 @@ class equipment:
         self.cbInput = cbInput
         self.cCycle = cCycle
         self.sDelayMax = sDelayMax
+        self.distance = distance
 
     def local_processing_time(self)->float:
         #eq. (2)

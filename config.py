@@ -13,8 +13,8 @@ def newEquipment(args=None) -> equipment.equipment:
     freq=1*1e9
     energyPerCycle=1e-27 * (freq**2)
     timeenergy_ratio = 0.5
-    cbInput = random.randint(300, 500) * 1000
-    cCycle = random.randint(900, 1100) * 1000000
+    cbInput = random.uniform(300, 500) * 1000
+    cCycle = random.uniform(900, 1100) * 1000000
 
     maxDistance = 200
     distance = maxDistance * math.sqrt(random.random())
@@ -22,16 +22,41 @@ def newEquipment(args=None) -> equipment.equipment:
 
     #TODO: the paper doesn't specify how to initalize these?
     gain=numpy.random.rayleigh(distance)
-    sDelayMax = 500 #when offloading, just uploading can take 25+ seconds
-                    #depending on randomness... (All tasks can be processed
-                    #locally in < 1.5 sec...)
+    sDelayMax = 1000 #when offloading, just uploading can take 25+ seconds
+                     #depending on randomness... (All tasks can be processed
+                     #locally in < 1.5 sec...)
 
     return equipment.equipment(power=power, power_waiting=power_waiting,
                                gain=gain, frequency=freq,
                                energyPerCycle=energyPerCycle,
                                timeenergy_ratio=timeenergy_ratio,
                                cbInput=cbInput, cCycle=cCycle,
-                               sDelayMax=sDelayMax)
+                               sDelayMax=sDelayMax, distance=distance)
+
+equipmentStateMetadata = (3,3,3)
+def equipmentToState(equipment):
+    #NOTE: you might think that this function should go in equipment.py, but it
+    #actually belongs here in config.py because it is dependent on the
+    #implementation of config.newEquipment
+
+    distributions = [#"percentiler" takes the linearOffset (see below) of the
+                     #actual value and returns the percentile of that value
+                     #relative to the distribution that generated it
+        {"min": 300*1000, "max": 500*1000, "actual": equipment.cbInput, "granularity": 3, "percentiler": lambda x: x},
+        {"min": 900*1000000, "max": 1100*1000000, "actual": equipment.cCycle, "granularity": 3, "percentiler": lambda x: x},
+        {"min": 0, "max": 200, "actual": equipment.distance, "granularity": 3, "percentiler": lambda x: x**2},
+    ]
+    states = []
+    for distribution in distributions:
+        assert(distribution["min"] <= distribution["actual"] and distribution["actual"] <= distribution["max"])
+
+        #0 = min; 1 = max
+        linearOffset = (distribution["actual"] - distribution["min"]) / (distribution["max"] - distribution["min"])
+
+        state = math.floor(distribution["granularity"] * distribution["percentiler"](linearOffset))
+        state = min(state, distribution["granularity"] - 1) # just in case actual == max
+        states.append(state)
+    return tuple(states)
 
 class SmartSimulation(simulation.simulation):
     @staticmethod
@@ -104,6 +129,8 @@ class SmartSimulation(simulation.simulation):
             allocationWeights = [ v / initial_sum for v in allocationWeights ]
 
         forceOffload = [ False ] * self.cEquipment
+        if (self.cEquipment != len(allocationWeights)):
+            import pdb; pdb.set_trace()
         for i in range(self.cEquipment):
             eq = self._equipment[i]
 
@@ -122,10 +149,11 @@ class SmartSimulation(simulation.simulation):
                 continue
             eq = self._equipment[i]
             upload_rate = eq.upload_rate(allocatedBandwidth, self.N0)
-            max_proccessingSeconds = (eq.sDelayMax - (eq.cbInput/upload_rate))
-            assert(max_proccessingSeconds > 0)
+            max_proccessingSeconds = eq.sDelayMax - (eq.cbInput/upload_rate)
             minHtz = eq.cCycle / max_proccessingSeconds
             minFrac[i] = minHtz / self.mec_clockspeed
+            if max_proccessingSeconds <= 0:
+                minFrac[i] = 1
 
         offloadIndicies = numpy.array(forceOffload).nonzero()[0]
 
