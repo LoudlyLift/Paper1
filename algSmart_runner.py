@@ -24,14 +24,17 @@ ql.train(1000000) #approx. 1k / 25min
 
 t2 = time.time()
 
-print(f"Training duration: {t2-t1}")
-print(f"Number of updates: {ql.getTrainUpdateCount()}")
-
-results = ql.evaluate(300)
+results = ql.evaluate(1000)
 
 avgmin    = statistics.median(result["min"]    for result in results)
 avgmax    = statistics.median(result["max"]    for result in results)
 avglocal  = statistics.median(result["local"]  for result in results)
 avgactual = statistics.median(result["actual"] for result in results)
 
-print(f"min: {avgmin}; max: {avgmax}; local: {avglocal}; actual: {avgactual}")
+print("TRAINING:")
+print(f"Training duration: {(t2-t1):.2f}")
+print(f"Number of updates: {ql.getTrainUpdateCount()}")
+print(f"Numver of entries in Q-Table: {ql.player._table.size}")
+
+print("EVALUATION:")
+print(f"min: {avgmin:.2f}; max: {avgmax:.2f}; local: {avglocal:.2f}; actual: {avgactual:.2f}")

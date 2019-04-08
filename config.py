@@ -172,6 +172,8 @@ class SmartSimulation(simulation.simulation):
 
         return simulation.simulation.computeCost(self, allocationWeights)
 
+cEQUIPMENT = 7
+
 def newSimulation() -> simulation.simulation:
     #given
     bandwidth=10e6
@@ -180,10 +182,7 @@ def newSimulation() -> simulation.simulation:
     #idk
     N0 = 1e-4
 
-    #TMP
-    cEquipment = 7
-
-    return SmartSimulation(bandwidth=bandwidth, cEquipment=cEquipment,
+    return SmartSimulation(bandwidth=bandwidth, cEquipment=cEQUIPMENT,
                                  mec_clockspeed=mec_clockspeed, N0=N0,
                                  consEquipment=newEquipment)
 
