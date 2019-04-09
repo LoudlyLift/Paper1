@@ -1,4 +1,5 @@
 import argparse
+import datetime
 import math
 import numpy
 import random
@@ -99,10 +100,13 @@ s = smartSimulation.SmartSimulation(bandwidth=args.bandwidth, cEquipment=args.eq
 
 if args.algorithm == 'smart':
     w = algSmart_world.algSmart_world(s, equipmentToState, equipmentStateMetadata, maxIter=5*args.equipment_count)
+    train_sim_callback = lambda: ql.getTrainEpisodeCount()
 elif args.algorithm == 'one':
     w = alg1_world.alg1_world(s)
+    train_sim_callback = lambda: ql.getTrainUpdateCount()
 elif args.algorithm == 'const':
     w = algConst_world.algConst_world(s)
+    train_sim_callback = lambda: 0
 elif args.algorithm.lower() == 'local' or args.algorithm.lower() == 'offload':
     if args.algorithm == args.algorithm.upper():
         #skip pre-processing step
@@ -114,6 +118,7 @@ elif args.algorithm.lower() == 'local' or args.algorithm.lower() == 'offload':
         w = algFullLocal.algFullLocal_world(s)
     elif args.algorithm.lower() == 'offload':
         w = algFullOffload.algFullOffload_world(s)
+    train_sim_callback = lambda: 0
 else:
     assert(False)
 
@@ -148,11 +153,8 @@ results = ql.evaluate(args.eval_episodes)
 medianactual = statistics.median(result["actual"]   for result in results)
 medianquant  = statistics.median(result["quantile"] for result in results)
 
-print("TRAINING:")
-print(f"Training duration: {(t2-t1):.2f}")
-print(f"Number of updates: {ql.getTrainUpdateCount()}")
-print(f"Number of entries in Q-Table: {ql.player._table.size}")
-print("")
-print("EVALUATION:")
-print(f"actual: {medianactual:.2f}")
-print(f"quantile: {medianquant:.2f}")
+train_dur = datetime.timedelta(seconds=(t2-t1))
+
+print("RESULTS:")
+print("algorithm | # Q-Table entries | train duration |    # train ep |     # train sim | actual | quantile")
+print(f"{args.algorithm:9s} | {ql.player._table.size:17d} | {train_dur} | {ql.getTrainEpisodeCount():13d} | {train_sim_callback():15d} | {medianactual:6.2f} | {medianquant:8.2f}")
