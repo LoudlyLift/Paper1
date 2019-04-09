@@ -37,15 +37,6 @@ class algSmart_world:
 
         self.simulation.reinitialize()
 
-        self.localCost = self.simulation.computeCost([0] * self.simulation.cEquipment)
-
-        self.minCost = math.inf
-        self.maxCost = 0.0
-        for actionVector in self.allActionVectors:
-            cost = self.simulation.computeCost(list(actionVector))
-            self.minCost = min(self.minCost, cost)
-            self.maxCost = max(self.maxCost, cost)
-
         return self.getState()
 
     def getRandomMove(self):
@@ -101,4 +92,14 @@ class algSmart_world:
         return [True] * len(self.allActions)
 
     def closeEpisode(self):
-        return {"min": self.minCost, "max": self.maxCost, "local": self.localCost, "actual": self._prior_cost}
+        actual = self._prior_cost
+
+        localCost = self.simulation.computeCost([0] * self.simulation.cEquipment)
+
+        costs = numpy.array(self.simulation.computeCost(list(actionVector)) for actionVector in self.allActionVectors)
+        # costs.sort() # O(n*log(n)) >> 3*O(n)
+
+        minCost = costs.min()
+        maxCost = costs.max()
+
+        return {"min": minCost, "max": maxCost, "local": localCost, "actual": actual}
