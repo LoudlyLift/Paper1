@@ -11,11 +11,17 @@ class algSmart_world:
         assert(_index <= self.simulation.cEquipment)
 
         if _index == self.simulation.cEquipment:
-            return [_baseVector]
+            assert(len(_baseVector) == _index) #TODO: we can just use this as the terminal condition and remove _index.
+            tot = sum(_baseVector)
+            if tot != 0:
+                _baseVector = tuple(weight / tot for weight in _baseVector)
+            ret = set([_baseVector])
+            return ret
 
-        allActionVectors = []
+        allActionVectors = set()
         for action in self.allActions:
-            allActionVectors += self.getAllActionVectors(_index=_index+1, _baseVector=_baseVector+(action,))
+            tmp = self.getAllActionVectors(_index=_index+1, _baseVector=_baseVector+(action,))
+            allActionVectors = allActionVectors.union(tmp)
         return allActionVectors
 
     def __init__(self, simulation: simulation.simulation, equipmentToState, equipmentStateMetadata, weights = [0,1,2,4], maxIter=35):
@@ -23,7 +29,7 @@ class algSmart_world:
 
         self.allActions = weights
         random.shuffle(self.allActions)
-        self.allActionVectors = self.getAllActionVectors()
+        self.allActionVectors = list(self.getAllActionVectors())
         random.shuffle(self.allActionVectors)
         self.offloadActions = [ action for action in self.allActions if action != 0 ]
 

@@ -1,6 +1,8 @@
 import math
 import numpy
 import random
+import fractions
+import functools
 
 import simulation
 
@@ -36,6 +38,9 @@ class alg1_world:
         assert(cItem >= 0)
         if cItem == 0:
             assert(_start is not None)
+            gcd = functools.reduce(fractions.gcd, _start)
+            if (gcd != 0): #equivalently, _start is the zero vector
+                _start = tuple(weight // gcd for weight in _start)
             return set([_start])
 
         if _start is None:
