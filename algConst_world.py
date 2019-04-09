@@ -32,13 +32,16 @@ class algConst_world(alg1_world.alg1_world):
         results = numpy.median(results, axis=0)
         return self.possibleActions[numpy.argmin(results)]
 
-    def __init__(self, simulation: simulation.simulation, cTrials=1000):
+    def __init__(self, simulation: simulation.simulation, action=None, cTrials=1000):
         super().__init__(simulation)
 
-        self.bestAction = world_helper.getCachedVariable(ALGCOST_DBFILE, "bestAction",
-                                                              lambda: self.determineBestAction(cTrials=1000),
-                                                              depFNames=["simulation.py", "equipment.py"])
-        print(f"Using the best action: {self.bestAction}")
+        if action is None:
+            action = world_helper.getCachedVariable(ALGCOST_DBFILE, "bestAction",
+                                                    lambda: self.determineBestAction(cTrials=1000),
+                                                    depFNames=["simulation.py", "equipment.py"])
+
+        self.action = action
+        print(f"Using the action: {self.action}")
 
     def reset(self):
         self.simulation.reinitialize()
@@ -49,7 +52,7 @@ class algConst_world(alg1_world.alg1_world):
         return 0
 
     def step(self, _):
-        self._prior_cost = self.simulation.computeCost(self.bestAction)
+        self._prior_cost = self.simulation.computeCost(self.action)
 
         reward = 0
         done = True

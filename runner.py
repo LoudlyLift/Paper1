@@ -104,7 +104,7 @@ elif args.algorithm == 'const':
     w = algConst_world.algConst_world(s)
 elif args.algorithm.lower() == 'local':
     if args.algorithm == 'LOCAL':
-        #skip pre-processing step so that it's all local; even if it fails time constraints.
+        #skip pre-processing step
         s = simulation.simulation(bandwidth=args.bandwidth,
                                   cEquipment=args.equipment_count,
                                   mec_clockspeed=args.mec_clockspeed, N0=args.n0,
