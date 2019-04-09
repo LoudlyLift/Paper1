@@ -19,7 +19,7 @@ args = parser.parse_args()
 s = config.newSimulation()
 
 if args.algorithm == 'smart':
-    w = algSmart_world.algSmart_world(s, config.equipmentToState, config.equipmentStateMetadata)
+    w = algSmart_world.algSmart_world(s, config.equipmentToState, config.equipmentStateMetadata, maxIter=5*config.cEQUIPMENT)
 elif args.algorithm == 'one':
     w = alg1_world.alg1_world(s)
 else:
