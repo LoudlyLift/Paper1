@@ -6,13 +6,13 @@ import statistics
 import sys
 import time
 
-import algSmart_world
 import alg1_world
 import algConst_world
-import config
+import algSmart_world
 import equipment
 import qlearning
 import qtable
+import smartSimulation
 
 parser = argparse.ArgumentParser(description='Run edge computing simulations')
 parser.add_argument('algorithm', choices=['one', 'smart', 'const'])
@@ -66,7 +66,7 @@ equipmentStateMetadata = (3,3,3)
 def equipmentToState(equipment):
     #NOTE: you might think that this function should go in equipment.py, but it
     #actually belongs here in config.py because it is dependent on the
-    #implementation of config.newEquipment
+    #implementation of newEquipment
 
     distributions = [#"percentiler" takes the linearOffset (see below) of the
                      #actual value and returns the percentile of that value
@@ -89,12 +89,12 @@ def equipmentToState(equipment):
 
 
 
-s = config.SmartSimulation(bandwidth=args.bandwidth, cEquipment=args.equipment_count,
+s = smartSimulation.SmartSimulation(bandwidth=args.bandwidth, cEquipment=args.equipment_count,
                                  mec_clockspeed=args.mec_clockspeed, N0=args.n0,
                                  consEquipment=newEquipment)
 
 if args.algorithm == 'smart':
-    w = algSmart_world.algSmart_world(s, config.equipmentToState, config.equipmentStateMetadata, maxIter=5*args.equipment_count)
+    w = algSmart_world.algSmart_world(s, equipmentToState, equipmentStateMetadata, maxIter=5*args.equipment_count)
 elif args.algorithm == 'one':
     w = alg1_world.alg1_world(s)
 elif args.algorithm == 'const':
