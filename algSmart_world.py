@@ -9,36 +9,15 @@ ALGSMART_DBFILE="./Persist/algSmart"
 
 """Wrapper around simulation.py for my proposed algorithm"""
 class algSmart_world:
-    def getAllActionVectors(self, _index=0, _baseVector=()):
-        assert(_index <= self.simulation.cEquipment)
-
-        if _index == self.simulation.cEquipment:
-            assert(len(_baseVector) == _index) #TODO: we can just use this as the terminal condition and remove _index.
-            tot = sum(_baseVector)
-            if tot != 0:
-                _baseVector = tuple(weight / tot for weight in _baseVector)
-            ret = set([_baseVector])
-            return ret
-
-        allActionVectors = set()
-        for action in self.allActions:
-            tmp = self.getAllActionVectors(_index=_index+1, _baseVector=_baseVector+(action,))
-            allActionVectors = allActionVectors.union(tmp)
-        return allActionVectors
-
     def __init__(self, simulation: simulation.simulation, equipmentToState, equipmentStateMetadata, weights = [0,1,2,4], maxIter=35):
         self.simulation = simulation
 
         self.allActions = weights
-        self.allActionVectors = world_helper.getCachedVariable(ALGSMART_DBFILE, "allActionVectors",
-                                                               lambda: list(self.getAllActionVectors()),
-                                                               depFNames=["algSmart_world.py"])
 
         self.offloadActions = [ action for action in self.allActions if action != 0 ]
 
-        self.percentiles = world_helper.getCachedVariable(ALGSMART_DBFILE, "percentiles",
-                                                          lambda: world_helper.computePercentiles(simulation, self.allActionVectors),
-                                                          depFNames=["simulation.py", "equipment.py"])
+        self.percentiles = world_helper.getStandardPercentiles(simulation)
+
         self.minCost = self.percentiles[0]
         self.maxCost = self.percentiles[100]
 
