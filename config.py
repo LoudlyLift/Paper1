@@ -171,23 +171,3 @@ class SmartSimulation(simulation.simulation):
             allocationWeights[iGlobal] = offloadWeights[iOffload]
 
         return simulation.simulation.computeCost(self, allocationWeights)
-
-cEQUIPMENT = 7
-
-def newSimulation() -> simulation.simulation:
-    #given
-    bandwidth=10e6
-    mec_clockspeed=5e9
-
-    #idk
-    N0 = 1e-4
-
-    return SmartSimulation(bandwidth=bandwidth, cEquipment=cEQUIPMENT,
-                                 mec_clockspeed=mec_clockspeed, N0=N0,
-                                 consEquipment=newEquipment)
-
-qtableConfig={"learning_rate": 0.3}
-
-future_discount=0.5
-
-world_config_num_cost_buckets=10

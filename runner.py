@@ -15,12 +15,22 @@ parser = argparse.ArgumentParser(description='Run edge computing simulations')
 parser.add_argument('algorithm', choices=['one', 'smart', 'const'])
 parser.add_argument('--train-episodes', type=int, default=10000, help="How many episodes to perform during training")
 parser.add_argument('--eval-episodes', type=int, default=1000, help="How many episodes to perform during evaluation")
+parser.add_argument('--future-discount', type=float, default=0.5, help="How much the Q-Table will value the next turn's reward")
+parser.add_argument('--equipment-count', type=int, default=7, help="How much UE's the simulation will have")
+parser.add_argument('--learning-rate', type=float, default=0.3, help="The Q-Table updates with a decaying moving average. This is the weight of the most recent observation")
+parser.add_argument('--bandwidth', type=float, default=10e6, help="The total bandwidth that is shared by all the transmitters (Hz)")
+parser.add_argument('--mec-clockspeed', type=float, default=5e9, help="The clockspeed of the MEC server's CPU (Hz)")
+parser.add_argument('--n0', type=float, default=1e-4, help="???")
 args = parser.parse_args()
 
-s = config.newSimulation()
+qtableConfig={"learning_rate": args.learning_rate}
+
+s = config.SmartSimulation(bandwidth=args.bandwidth, cEquipment=args.equipment_count,
+                                 mec_clockspeed=args.mec_clockspeed, N0=args.n0,
+                                 consEquipment=config.newEquipment)
 
 if args.algorithm == 'smart':
-    w = algSmart_world.algSmart_world(s, config.equipmentToState, config.equipmentStateMetadata, maxIter=5*config.cEQUIPMENT)
+    w = algSmart_world.algSmart_world(s, config.equipmentToState, config.equipmentStateMetadata, maxIter=5*args.equipment_count)
 elif args.algorithm == 'one':
     w = alg1_world.alg1_world(s)
 elif args.algorithm == 'const':
@@ -45,8 +55,8 @@ def computeRandAct(episode: int) -> int:
 
 ql = qlearning.qlearning(env=w, compute_randact=computeRandAct,
                          consPlayer=qtable.qtable,
-                         player_config=config.qtableConfig,
-                         future_discount=config.future_discount)
+                         player_config=qtableConfig,
+                         future_discount=args.future_discount)
 
 t1 = time.time()
 print("Training Q-Table")
