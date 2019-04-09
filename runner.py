@@ -9,6 +9,7 @@ import time
 import alg1_world
 import algConst_world
 import algFullLocal
+import algFullOffload
 import algSmart_world
 import equipment
 import qlearning
@@ -17,7 +18,7 @@ import simulation
 import smartSimulation
 
 parser = argparse.ArgumentParser(description='Run edge computing simulations')
-parser.add_argument('algorithm', choices=['one', 'smart', 'const', 'local', 'LOCAL'])
+parser.add_argument('algorithm', choices=['one', 'smart', 'const', 'local', 'LOCAL', 'offload', 'OFFLOAD'])
 parser.add_argument('--log-period', type=int, default=100, help="How episodes to go between updates to the console")
 parser.add_argument('--train-episodes', type=int, default=10000, help="How many episodes to perform during training")
 parser.add_argument('--eval-episodes', type=int, default=1000, help="How many episodes to perform during evaluation")
@@ -102,14 +103,17 @@ elif args.algorithm == 'one':
     w = alg1_world.alg1_world(s)
 elif args.algorithm == 'const':
     w = algConst_world.algConst_world(s)
-elif args.algorithm.lower() == 'local':
-    if args.algorithm == 'LOCAL':
+elif args.algorithm.lower() == 'local' or args.algorithm.lower() == 'offload':
+    if args.algorithm == args.algorithm.upper():
         #skip pre-processing step
         s = simulation.simulation(bandwidth=args.bandwidth,
                                   cEquipment=args.equipment_count,
                                   mec_clockspeed=args.mec_clockspeed, N0=args.n0,
                                   consEquipment=newEquipment)
-    w = algFullLocal.algFullLocal_world(s)
+    if args.algorithm.lower() == 'local':
+        w = algFullLocal.algFullLocal_world(s)
+    elif args.algorithm.lower() == 'offload':
+        w = algFullOffload.algFullOffload_world(s)
 else:
     assert(False)
 
