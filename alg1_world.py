@@ -57,6 +57,7 @@ class alg1_world:
         self.granularityTC = granularityTC
 
         self.possibleActions = list(alg1_world.allocations(cItem=simulation.cEquipment, cBucket=simulation.cEquipment))
+        random.shuffle(self.possibleActions)
 
     def reset(self):
         self.simulation.reinitialize()

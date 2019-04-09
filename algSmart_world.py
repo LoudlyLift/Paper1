@@ -22,7 +22,9 @@ class algSmart_world:
         self.simulation = simulation
 
         self.allActions = weights
+        random.shuffle(self.allActions)
         self.allActionVectors = self.getAllActionVectors()
+        random.shuffle(self.allActionVectors)
         self.offloadActions = [ action for action in self.allActions if action != 0 ]
 
         self.maxIter = maxIter
