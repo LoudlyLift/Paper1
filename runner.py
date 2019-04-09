@@ -16,6 +16,7 @@ import smartSimulation
 
 parser = argparse.ArgumentParser(description='Run edge computing simulations')
 parser.add_argument('algorithm', choices=['one', 'smart', 'const'])
+parser.add_argument('--log-period', type=int, default=100, help="How episodes to go between updates to the console")
 parser.add_argument('--train-episodes', type=int, default=10000, help="How many episodes to perform during training")
 parser.add_argument('--eval-episodes', type=int, default=1000, help="How many episodes to perform during evaluation")
 parser.add_argument('--future-discount', type=float, default=0.5, help="How much the Q-Table will value the next turn's reward")
@@ -124,7 +125,7 @@ ql = qlearning.qlearning(env=w, compute_randact=computeRandAct,
 
 t1 = time.time()
 print("Training Q-Table")
-ql.train(args.train_episodes)
+ql.train(args.train_episodes, log_period=args.log_period)
 t2 = time.time()
 
 print("Evaluating Q-Table")

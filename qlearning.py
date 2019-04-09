@@ -62,27 +62,27 @@ class qlearning:
         self._train_update_count = 0
         self._train_episode_count = 0
 
-    def evaluate(self, count):
+    def evaluate(self, count, log_period=1):
         """runs count episodes without updating Q-values.
 
         returns a list of the things returned by closeEpisode
 
         """
-        return self._runEpisodes(count, training=False)
+        return self._runEpisodes(count, training=False, log_period=log_period)
 
-    def train(self, count):
+    def train(self, count, log_period=100):
         """runs count episodes while updating Q-Values.
 
         returns a list of the things returned by closeEpisode
 
         """
-        return self._runEpisodes(count, training=True)
+        return self._runEpisodes(count, training=True, log_period=log_period)
 
-    def _runEpisodes(self, count, training, log=True):
+    def _runEpisodes(self, count, training, log_period):
         results = []
         cStep = 0
         for i in range(count):
-            if log:
+            if log_period > 0 and i % log_period == 0:
                 print(f"\r{i} / {count}", end="")
             try:
                 state_old = self._env.reset()
