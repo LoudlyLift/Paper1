@@ -4,6 +4,7 @@ import argparse
 
 import algSmart_world
 import alg1_world
+import algConst_world
 import config
 import equipment
 import qlearning
@@ -11,7 +12,7 @@ import qtable
 import statistics
 
 parser = argparse.ArgumentParser(description='Run edge computing simulations')
-parser.add_argument('algorithm', choices=['one', 'smart'])
+parser.add_argument('algorithm', choices=['one', 'smart', 'const'])
 parser.add_argument('--train-episodes', type=int, default=10000, help="How many episodes to perform during training")
 parser.add_argument('--eval-episodes', type=int, default=1000, help="How many episodes to perform during evaluation")
 args = parser.parse_args()
@@ -22,6 +23,8 @@ if args.algorithm == 'smart':
     w = algSmart_world.algSmart_world(s, config.equipmentToState, config.equipmentStateMetadata, maxIter=5*config.cEQUIPMENT)
 elif args.algorithm == 'one':
     w = alg1_world.alg1_world(s)
+elif args.algorithm == 'const':
+    w = algConst_world.algConst_world(s)
 else:
     assert(False)
 
