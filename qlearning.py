@@ -116,7 +116,8 @@ class qlearning:
                     cStep += 1
 
                 results.append(self._env.closeEpisode())
-                self._train_episode_count += 1
+                if training:
+                    self._train_episode_count += 1
             except KeyboardInterrupt as e:
                 print("Keyboard Interrupt")
                 break
