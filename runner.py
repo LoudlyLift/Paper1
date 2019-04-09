@@ -25,8 +25,23 @@ elif args.algorithm == 'one':
 else:
     assert(False)
 
-ql = qlearning.qlearning(env=w,
-                         compute_randact=lambda episodeNum: 0.1,
+
+x1 = 0
+y1 = 1
+
+x2 = 5000
+y2 = 0.01
+assert(x1 <= x2)
+assert(0 <= y2 and y2 <= y1 and y1 <= 1)
+def computeRandAct(episode: int) -> int:
+    prob = ((y2-y1)/(x2-x1))*(episode - x1) + y1
+
+    prob = min(prob, y1)
+    prob = max(prob, y2)
+
+    return prob
+
+ql = qlearning.qlearning(env=w, compute_randact=computeRandAct,
                          consPlayer=qtable.qtable,
                          player_config=config.qtableConfig,
                          future_discount=config.future_discount)

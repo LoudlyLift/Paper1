@@ -45,7 +45,7 @@ class qlearning:
 
     compute_randact(episode_num): given the episode number, this computes
     probability with which a random move should be made instead of action
-    chosen.
+    chosen. Zero indexed.
 
     cls_player must make an instance using
     cls_player(state_shape, num_actions). That instance must have these
