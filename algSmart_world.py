@@ -76,7 +76,7 @@ class algSmart_world:
             self._prior_cost = self.simulation.computeCost(self.currentVector)
             self._prior_quantile = numpy.searchsorted(self.percentiles, self._prior_cost) / (len(self.percentiles)-1)
 
-            reward = (100 * (1-self._prior_quantile)) ** 2
+            reward = (100 * (1-self._prior_quantile)) ** 4
         else:
             reward = 0
 

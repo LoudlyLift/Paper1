@@ -19,7 +19,7 @@ parser.add_argument('algorithm', choices=['one', 'smart', 'const'])
 parser.add_argument('--log-period', type=int, default=100, help="How episodes to go between updates to the console")
 parser.add_argument('--train-episodes', type=int, default=10000, help="How many episodes to perform during training")
 parser.add_argument('--eval-episodes', type=int, default=1000, help="How many episodes to perform during evaluation")
-parser.add_argument('--future-discount', type=float, default=0.5, help="How much the Q-Table will value the next turn's reward")
+parser.add_argument('--future-discount', type=float, default=0.97, help="How much the Q-Table will value the next turn's reward")
 parser.add_argument('--equipment-count', type=int, default=7, help="How much UE's the simulation will have")
 parser.add_argument('--learning-rate', type=float, default=0.3, help="The Q-Table updates with a decaying moving average. This is the weight of the most recent observation")
 parser.add_argument('--bandwidth', type=float, default=10e6, help="The total bandwidth that is shared by all the transmitters (Hz)")
@@ -103,11 +103,11 @@ elif args.algorithm == 'const':
 else:
     assert(False)
 
-x1 = 0
+x1 = 5000
 y1 = 1
 
-x2 = 5000
-y2 = 0.01
+x2 = 10000
+y2 = 0.03
 assert(x1 <= x2)
 assert(0 <= y2 and y2 <= y1 and y1 <= 1)
 def computeRandAct(episode: int) -> int:
