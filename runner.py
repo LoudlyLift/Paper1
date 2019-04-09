@@ -48,10 +48,12 @@ ql = qlearning.qlearning(env=w, compute_randact=computeRandAct,
 
 t1 = time.time()
 
+print("Training Q-Table")
 ql.train(args.train_episodes)
 
 t2 = time.time()
 
+print("Evaluating Q-Table")
 results = ql.evaluate(args.eval_episodes)
 
 medianmin    = statistics.median(result["min"]    for result in results)

@@ -92,7 +92,7 @@ class qlearning:
         cStep = 0
         for i in range(count):
             if log:
-                print(f"{i} / {count}")
+                print(f"\r{i} / {count}", end="")
             try:
                 state_old = self._env.reset()
                 reward_sum = 0
@@ -129,6 +129,7 @@ class qlearning:
             except KeyboardInterrupt as e:
                 print("Keyboard Interrupt")
                 break
+        print("")
         return results
 
     def getTrainUpdateCount(self):
