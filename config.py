@@ -6,58 +6,6 @@ import typing
 import equipment
 import simulation
 
-def newEquipment(args=None) -> equipment.equipment:
-    # values given in the paper
-    power=500*1e-3
-    power_waiting=100*1e-3
-    freq=1*1e9
-    energyPerCycle=1e-27 * (freq**2)
-    timeenergy_ratio = 0.5
-    cbInput = random.uniform(300, 500) * 1000
-    cCycle = random.uniform(900, 1100) * 1000000
-
-    maxDistance = 200
-    distance = maxDistance * math.sqrt(random.random())
-    posTheta = random.random() * 2 * math.pi
-
-    #TODO: the paper doesn't specify how to initalize these?
-    gain=numpy.random.rayleigh(distance)
-    sDelayMax = 1000 #when offloading, just uploading can take 25+ seconds
-                     #depending on randomness... (All tasks can be processed
-                     #locally in < 1.5 sec...)
-
-    return equipment.equipment(power=power, power_waiting=power_waiting,
-                               gain=gain, frequency=freq,
-                               energyPerCycle=energyPerCycle,
-                               timeenergy_ratio=timeenergy_ratio,
-                               cbInput=cbInput, cCycle=cCycle,
-                               sDelayMax=sDelayMax, distance=distance)
-
-equipmentStateMetadata = (3,3,3)
-def equipmentToState(equipment):
-    #NOTE: you might think that this function should go in equipment.py, but it
-    #actually belongs here in config.py because it is dependent on the
-    #implementation of config.newEquipment
-
-    distributions = [#"percentiler" takes the linearOffset (see below) of the
-                     #actual value and returns the percentile of that value
-                     #relative to the distribution that generated it
-        {"min": 300*1000, "max": 500*1000, "actual": equipment.cbInput, "granularity": 3, "percentiler": lambda x: x},
-        {"min": 900*1000000, "max": 1100*1000000, "actual": equipment.cCycle, "granularity": 3, "percentiler": lambda x: x},
-        {"min": 0, "max": 200, "actual": equipment.distance, "granularity": 3, "percentiler": lambda x: x**2},
-    ]
-    states = []
-    for distribution in distributions:
-        assert(distribution["min"] <= distribution["actual"] and distribution["actual"] <= distribution["max"])
-
-        #0 = min; 1 = max
-        linearOffset = (distribution["actual"] - distribution["min"]) / (distribution["max"] - distribution["min"])
-
-        state = math.floor(distribution["granularity"] * distribution["percentiler"](linearOffset))
-        state = min(state, distribution["granularity"] - 1) # just in case actual == max
-        states.append(state)
-    return tuple(states)
-
 class SmartSimulation(simulation.simulation):
     @staticmethod
     def weightedDistribution(additional: float, initialBuckets: typing.List[float], weights: typing.List[float]) -> typing.List[float]:

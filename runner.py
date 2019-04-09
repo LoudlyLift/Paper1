@@ -1,6 +1,10 @@
-import time
-import sys
 import argparse
+import math
+import numpy
+import random
+import statistics
+import sys
+import time
 
 import algSmart_world
 import alg1_world
@@ -9,7 +13,6 @@ import config
 import equipment
 import qlearning
 import qtable
-import statistics
 
 parser = argparse.ArgumentParser(description='Run edge computing simulations')
 parser.add_argument('algorithm', choices=['one', 'smart', 'const'])
@@ -21,13 +24,74 @@ parser.add_argument('--learning-rate', type=float, default=0.3, help="The Q-Tabl
 parser.add_argument('--bandwidth', type=float, default=10e6, help="The total bandwidth that is shared by all the transmitters (Hz)")
 parser.add_argument('--mec-clockspeed', type=float, default=5e9, help="The clockspeed of the MEC server's CPU (Hz)")
 parser.add_argument('--n0', type=float, default=1e-4, help="???")
+
+#equipment config
+parser.add_argument('--equipment-power', type=float, default=500e-3, help="The transmission power of equipment transmitters")
+parser.add_argument('--equipment-power-idle', type=float, default=100e-3, help="The power of equipment transmitters when idle")
+parser.add_argument('--equipment-clockspeed', type=float, default=1e9, help="The equipment's CPU's clockspeed (Hz)")
+parser.add_argument('--equipment-timeenergy-ratio', type=float, default=0.5, help="1 to optimize for time, 0 to optimize for energy, intermediate values are a linear mix")
+
 args = parser.parse_args()
 
-qtableConfig={"learning_rate": args.learning_rate}
+
+
+def newEquipment(arg=None) -> equipment.equipment:
+    # values given in the paper
+    power=args.equipment_power
+    power_waiting=args.equipment_power_idle
+    freq=args.equipment_clockspeed
+    energyPerCycle=1e-27 * (freq**2)
+    timeenergy_ratio = args.equipment_timeenergy_ratio
+    cbInput = random.uniform(300, 500) * 1000
+    cCycle = random.uniform(900, 1100) * 1000000
+
+    maxDistance = 200
+    distance = maxDistance * math.sqrt(random.random())
+    posTheta = random.random() * 2 * math.pi
+
+    #TODO: the paper doesn't specify how to initalize these?
+    gain=numpy.random.rayleigh(distance)
+    sDelayMax = 1000 #when offloading, just uploading can take 25+ seconds
+                     #depending on randomness... (All tasks can be processed
+                     #locally in < 1.5 sec...)
+
+    return equipment.equipment(power=power, power_waiting=power_waiting,
+                               gain=gain, frequency=freq,
+                               energyPerCycle=energyPerCycle,
+                               timeenergy_ratio=timeenergy_ratio,
+                               cbInput=cbInput, cCycle=cCycle,
+                               sDelayMax=sDelayMax, distance=distance)
+
+equipmentStateMetadata = (3,3,3)
+def equipmentToState(equipment):
+    #NOTE: you might think that this function should go in equipment.py, but it
+    #actually belongs here in config.py because it is dependent on the
+    #implementation of config.newEquipment
+
+    distributions = [#"percentiler" takes the linearOffset (see below) of the
+                     #actual value and returns the percentile of that value
+                     #relative to the distribution that generated it
+        {"min": 300*1000, "max": 500*1000, "actual": equipment.cbInput, "granularity": 3, "percentiler": lambda x: x},
+        {"min": 900*1000000, "max": 1100*1000000, "actual": equipment.cCycle, "granularity": 3, "percentiler": lambda x: x},
+        {"min": 0, "max": 200, "actual": equipment.distance, "granularity": 3, "percentiler": lambda x: x**2},
+    ]
+    states = []
+    for distribution in distributions:
+        assert(distribution["min"] <= distribution["actual"] and distribution["actual"] <= distribution["max"])
+
+        #0 = min; 1 = max
+        linearOffset = (distribution["actual"] - distribution["min"]) / (distribution["max"] - distribution["min"])
+
+        state = math.floor(distribution["granularity"] * distribution["percentiler"](linearOffset))
+        state = min(state, distribution["granularity"] - 1) # just in case actual == max
+        states.append(state)
+    return tuple(states)
+
+
 
 s = config.SmartSimulation(bandwidth=args.bandwidth, cEquipment=args.equipment_count,
                                  mec_clockspeed=args.mec_clockspeed, N0=args.n0,
-                                 consEquipment=config.newEquipment)
+                                 consEquipment=newEquipment)
 
 if args.algorithm == 'smart':
     w = algSmart_world.algSmart_world(s, config.equipmentToState, config.equipmentStateMetadata, maxIter=5*args.equipment_count)
@@ -55,7 +119,7 @@ def computeRandAct(episode: int) -> int:
 
 ql = qlearning.qlearning(env=w, compute_randact=computeRandAct,
                          consPlayer=qtable.qtable,
-                         player_config=qtableConfig,
+                         player_config={"learning_rate": args.learning_rate},
                          future_discount=args.future_discount)
 
 t1 = time.time()
