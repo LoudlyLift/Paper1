@@ -1,9 +1,11 @@
 import math
 import random
 import numpy
+import world_helper
 
 import simulation
 
+ALGSMART_DBFILE="./Persist/algSmart"
 
 """Wrapper around simulation.py for my proposed algorithm"""
 class algSmart_world:
@@ -28,10 +30,17 @@ class algSmart_world:
         self.simulation = simulation
 
         self.allActions = weights
-        random.shuffle(self.allActions)
-        self.allActionVectors = list(self.getAllActionVectors())
-        random.shuffle(self.allActionVectors)
+        self.allActionVectors = world_helper.getCachedVariable(ALGSMART_DBFILE, "allActionVectors",
+                                                               lambda: list(self.getAllActionVectors()),
+                                                               depFNames=["algSmart_world.py"])
+
         self.offloadActions = [ action for action in self.allActions if action != 0 ]
+
+        self.percentiles = world_helper.getCachedVariable(ALGSMART_DBFILE, "percentiles",
+                                                          lambda: world_helper.computePercentiles(simulation, self.allActionVectors),
+                                                          depFNames=["simulation.py", "equipment.py"])
+        self.minCost = self.percentiles[0]
+        self.maxCost = self.percentiles[100]
 
         self.maxIter = maxIter
 
@@ -100,16 +109,7 @@ class algSmart_world:
         return [True] * len(self.allActions)
 
     def closeEpisode(self):
-        actual = self._prior_cost
-
         localCost = self.simulation.computeCost([0] * self.simulation.cEquipment)
+        quantile = numpy.searchsorted(self.percentiles, self._prior_cost) / (len(self.percentiles)-1)
 
-        costs = numpy.empty(len(self.allActionVectors))
-        for (i, actionVector) in enumerate(self.allActionVectors):
-            costs[i] = self.simulation.computeCost(list(actionVector))
-
-        minCost = costs.min()
-        maxCost = costs.max()
-        percentile = 100*numpy.sum(costs < actual) / costs.size
-
-        return {"min": minCost, "max": maxCost, "local": localCost, "actual": actual, "percnt": percentile}
+        return {"min": self.minCost, "max": self.maxCost, "local": localCost, "actual": self._prior_cost, "quantile": quantile}

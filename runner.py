@@ -25,7 +25,6 @@ elif args.algorithm == 'one':
 else:
     assert(False)
 
-
 x1 = 0
 y1 = 1
 
@@ -47,20 +46,18 @@ ql = qlearning.qlearning(env=w, compute_randact=computeRandAct,
                          future_discount=config.future_discount)
 
 t1 = time.time()
-
 print("Training Q-Table")
 ql.train(args.train_episodes)
-
 t2 = time.time()
 
 print("Evaluating Q-Table")
 results = ql.evaluate(args.eval_episodes)
 
-medianmin    = statistics.median(result["min"]    for result in results)
-medianmax    = statistics.median(result["max"]    for result in results)
-medianlocal  = statistics.median(result["local"]  for result in results)
-medianactual = statistics.median(result["actual"] for result in results)
-medianpercnt = statistics.median(result["percnt"] for result in results)
+medianmin    = statistics.median(result["min"]      for result in results)
+medianmax    = statistics.median(result["max"]      for result in results)
+medianlocal  = statistics.median(result["local"]    for result in results)
+medianactual = statistics.median(result["actual"]   for result in results)
+medianquant  = statistics.median(result["quantile"] for result in results)
 
 print("TRAINING:")
 print(f"Training duration: {(t2-t1):.2f}")
@@ -72,4 +69,4 @@ print(f"min: {medianmin:.2f}")
 print(f"max: {medianmax:.2f}")
 print(f"local: {medianlocal:.2f}")
 print(f"actual: {medianactual:.2f}")
-print(f"percentile: {medianpercnt:.2f}")
+print(f"quantile: {medianquant:.2f}")

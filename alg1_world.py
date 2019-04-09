@@ -5,7 +5,9 @@ import fractions
 import functools
 
 import simulation
+import world_helper
 
+ALG1_DBFILE = "./Persist/alg1"
 
 """Wrapper around simulation.py for Algorithm 1 as described in the paper
 
@@ -62,8 +64,15 @@ class alg1_world:
 
         self.granularityTC = granularityTC
 
-        self.possibleActions = list(alg1_world.allocations(cItem=simulation.cEquipment, cBucket=simulation.cEquipment))
-        random.shuffle(self.possibleActions)
+        self.possibleActions = world_helper.getCachedVariable(ALG1_DBFILE, "possibleActions",
+                                                              lambda: list(alg1_world.allocations(cItem=simulation.cEquipment, cBucket=simulation.cEquipment)),
+                                                              depFNames=["alg1_world.py"])
+
+        self.percentiles = world_helper.getCachedVariable(ALG1_DBFILE, "percentiles",
+                                                          lambda: world_helper.computePercentiles(self.simulation, self.possibleActions),
+                                                          depFNames=["simulation.py", "equipment.py"])
+        self.minCost = self.percentiles[0]
+        self.maxCost = self.percentiles[100]
 
     def reset(self):
         self.simulation.reinitialize()
@@ -72,14 +81,6 @@ class alg1_world:
         self.iterCount = 0
 
         self.localCost = self.simulation.computeCost([0] * self.simulation.cEquipment)
-
-        self.costs = numpy.empty(len(self.possibleActions))
-        for (i, act) in enumerate(self.possibleActions):
-            self.costs[i] = self.simulation.computeCost(list(act))
-
-
-        self.minCost = self.costs.min()
-        self.maxCost = self.costs.max()
 
         # alg 1 says that initial state is random ¯\_(ツ)_/¯
         metadata = self.getStateMetadata()
@@ -126,7 +127,6 @@ class alg1_world:
         return [True] * len(self.possibleActions)
 
     def closeEpisode(self):
-        actual = self._prior_cost
-        percentile = 100*numpy.sum(self.costs < actual) / self.costs.size
+        quantile = numpy.searchsorted(self.percentiles, self._prior_cost) / (len(self.percentiles)-1)
 
-        return {"min": self.minCost, "max": self.maxCost, "local": self.localCost, "actual": actual, "percnt": percentile}
+        return {"min": self.minCost, "max": self.maxCost, "local": self.localCost, "actual": self._prior_cost, "quantile": quantile}
