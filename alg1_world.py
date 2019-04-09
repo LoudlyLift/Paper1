@@ -74,6 +74,10 @@ class alg1_world:
         self.minCost = self.percentiles[0]
         self.maxCost = self.percentiles[100]
 
+        #"invalid" moves are made valid by the preclassification step
+        self.legalMoves = numpy.array([True] * len(self.possibleActions))
+
+
     def reset(self):
         self.simulation.reinitialize()
 
@@ -123,8 +127,7 @@ class alg1_world:
         return len(self.possibleActions)
 
     def getLegalMoves(self):
-        #"invalid" moves are made valid by the preclassification step
-        return [True] * len(self.possibleActions)
+        return self.legalMoves
 
     def closeEpisode(self):
         quantile = numpy.searchsorted(self.percentiles, self._prior_cost) / (len(self.percentiles)-1)

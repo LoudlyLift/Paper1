@@ -2,17 +2,8 @@ import numpy
 import math
 
 def bestLegalMove(qvals, legality):
-    actV = -math.inf
-    actI = -1
-    for index, (val, legal) in enumerate(zip(qvals, legality)):
-        if legal and val > actV:
-            actI = index
-            actV = val
-    #assert(actI != -1)
-    if actI == -1:
-        import pdb; pdb.set_trace()
-        foo=1+1
-    return actI
+    qvals = qvals * legality
+    return numpy.argmax(qvals)
 
 class qlearning:
     """env state must be a tuple; no lists, no matricies, etc. A simple tuple of

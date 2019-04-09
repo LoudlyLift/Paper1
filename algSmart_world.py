@@ -47,6 +47,10 @@ class algSmart_world:
         self.equipmentToState = equipmentToState
         self.equipmentStateMetadata = equipmentStateMetadata
 
+        #"invalid" moves are made valid by the preclassification step
+        self.legalMoves = numpy.array([True] * len(self.allActions))
+
+
     def reset(self):
         self.currentVector = numpy.array([0] * self.simulation.cEquipment)
         self.currentIndex = 0
@@ -106,7 +110,7 @@ class algSmart_world:
         return len(self.allActions)
 
     def getLegalMoves(self):
-        return [True] * len(self.allActions)
+        return self.legalMoves
 
     def closeEpisode(self):
         localCost = self.simulation.computeCost([0] * self.simulation.cEquipment)
