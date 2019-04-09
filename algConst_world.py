@@ -74,6 +74,4 @@ class algConst_world(alg1_world.alg1_world):
 
     def closeEpisode(self):
         quantile = numpy.searchsorted(self.percentiles, self._prior_cost) / (len(self.percentiles)-1)
-        self.localCost = self.simulation.computeCost([0] * self.simulation.cEquipment)
-
-        return {"min": self.minCost, "max": self.maxCost, "local": self.localCost, "actual": self._prior_cost, "quantile": quantile}
+        return {"actual": self._prior_cost, "quantile": quantile}

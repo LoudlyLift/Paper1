@@ -99,4 +99,4 @@ class alg1_world:
     def closeEpisode(self):
         quantile = numpy.searchsorted(self.percentiles, self._prior_cost) / (len(self.percentiles)-1)
 
-        return {"min": self.minCost, "max": self.maxCost, "local": self.localCost, "actual": self._prior_cost, "quantile": quantile}
+        return {"actual": self._prior_cost, "quantile": quantile}

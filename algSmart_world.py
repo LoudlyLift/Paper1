@@ -18,9 +18,6 @@ class algSmart_world:
 
         self.percentiles = world_helper.getStandardPercentiles(simulation)
 
-        self.minCost = self.percentiles[0]
-        self.maxCost = self.percentiles[100]
-
         self.maxIter = maxIter
 
         self.equipmentToState = equipmentToState
@@ -94,6 +91,4 @@ class algSmart_world:
         return self.legalMoves
 
     def closeEpisode(self):
-        localCost = self.simulation.computeCost([0] * self.simulation.cEquipment)
-
-        return {"min": self.minCost, "max": self.maxCost, "local": localCost, "actual": self._prior_cost, "quantile": self._prior_quantile}
+        return {"actual": self._prior_cost, "quantile": self._prior_quantile}
