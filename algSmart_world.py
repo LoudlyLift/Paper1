@@ -98,10 +98,12 @@ class algSmart_world:
 
         localCost = self.simulation.computeCost([0] * self.simulation.cEquipment)
 
-        costs = numpy.array(self.simulation.computeCost(list(actionVector)) for actionVector in self.allActionVectors)
-        # costs.sort() # O(n*log(n)) >> 3*O(n)
+        costs = numpy.empty(len(self.allActionVectors))
+        for (i, actionVector) in enumerate(self.allActionVectors):
+            costs[i] = self.simulation.computeCost(list(actionVector))
 
         minCost = costs.min()
         maxCost = costs.max()
+        percentile = 100*numpy.sum(costs < actual) / costs.size
 
-        return {"min": minCost, "max": maxCost, "local": localCost, "actual": actual}
+        return {"min": minCost, "max": maxCost, "local": localCost, "actual": actual, "percnt": percentile}

@@ -1,4 +1,5 @@
 import math
+import numpy
 import random
 
 import simulation
@@ -67,12 +68,13 @@ class alg1_world:
 
         self.localCost = self.simulation.computeCost([0] * self.simulation.cEquipment)
 
-        self.minCost = math.inf
-        self.maxCost = 0.0
-        for act in self.possibleActions:
-            cost = self.simulation.computeCost(list(act))
-            self.minCost = min(self.minCost, cost)
-            self.maxCost = max(self.maxCost, cost)
+        self.costs = numpy.empty(len(self.possibleActions))
+        for (i, act) in enumerate(self.possibleActions):
+            self.costs[i] = self.simulation.computeCost(list(act))
+
+
+        self.minCost = self.costs.min()
+        self.maxCost = self.costs.max()
 
         # alg 1 says that initial state is random ¯\_(ツ)_/¯
         metadata = self.getStateMetadata()
@@ -119,4 +121,7 @@ class alg1_world:
         return [True] * len(self.possibleActions)
 
     def closeEpisode(self):
-        return {"min": self.minCost, "max": self.maxCost, "local": self.localCost, "actual": self._prior_cost}
+        actual = self._prior_cost
+        percentile = 100*numpy.sum(self.costs < actual) / self.costs.size
+
+        return {"min": self.minCost, "max": self.maxCost, "local": self.localCost, "actual": actual, "percnt": percentile}
