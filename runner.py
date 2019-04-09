@@ -54,10 +54,11 @@ t2 = time.time()
 
 results = ql.evaluate(args.eval_episodes)
 
-avgmin    = statistics.median(result["min"]    for result in results)
-avgmax    = statistics.median(result["max"]    for result in results)
-avglocal  = statistics.median(result["local"]  for result in results)
-avgactual = statistics.median(result["actual"] for result in results)
+medianmin    = statistics.median(result["min"]    for result in results)
+medianmax    = statistics.median(result["max"]    for result in results)
+medianlocal  = statistics.median(result["local"]  for result in results)
+medianactual = statistics.median(result["actual"] for result in results)
+
 
 print("TRAINING:")
 print(f"Training duration: {(t2-t1):.2f}")
@@ -65,4 +66,4 @@ print(f"Number of updates: {ql.getTrainUpdateCount()}")
 print(f"Numver of entries in Q-Table: {ql.player._table.size}")
 print("")
 print("EVALUATION:")
-print(f"min: {avgmin:.2f}\nmax: {avgmax:.2f}\nlocal: {avglocal:.2f}\nactual: {avgactual:.2f}")
+print(f"min: {medianmin:.2f}\nmax: {medianmax:.2f}\nlocal: {medianlocal:.2f}\nactual: {medianactual:.2f}")
