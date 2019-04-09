@@ -38,6 +38,7 @@ class algConst_world(alg1_world.alg1_world):
         self.bestAction = world_helper.getCachedVariable(ALGCOST_DBFILE, "bestAction",
                                                               lambda: self.determineBestAction(cTrials=1000),
                                                               depFNames=["simulation.py", "equipment.py"])
+        print(f"Using the best action: {self.bestAction}")
 
     def reset(self):
         self.simulation.reinitialize()
