@@ -74,7 +74,9 @@ class algSmart_world:
 
         if done:
             self._prior_cost = self.simulation.computeCost(self.currentVector)
-            reward = -self._prior_cost
+            self._prior_quantile = numpy.searchsorted(self.percentiles, self._prior_cost) / (len(self.percentiles)-1)
+
+            reward = (100 * (1-self._prior_quantile)) ** 2
         else:
             reward = 0
 
@@ -114,6 +116,5 @@ class algSmart_world:
 
     def closeEpisode(self):
         localCost = self.simulation.computeCost([0] * self.simulation.cEquipment)
-        quantile = numpy.searchsorted(self.percentiles, self._prior_cost) / (len(self.percentiles)-1)
 
-        return {"min": self.minCost, "max": self.maxCost, "local": localCost, "actual": self._prior_cost, "quantile": quantile}
+        return {"min": self.minCost, "max": self.maxCost, "local": localCost, "actual": self._prior_cost, "quantile": self._prior_quantile}
