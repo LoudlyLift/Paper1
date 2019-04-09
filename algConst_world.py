@@ -30,7 +30,7 @@ class algConst_world(alg1_world.alg1_world):
         if log:
             print("")
         results = numpy.median(results, axis=0)
-        return self.possibleActions[numpy.argmax(results)]
+        return self.possibleActions[numpy.argmin(results)]
 
     def __init__(self, simulation: simulation.simulation, cTrials=1000):
         super().__init__(simulation)
