@@ -38,7 +38,7 @@ class algConst_world(alg1_world.alg1_world):
         self.isTrainable = False
 
         if action is None:
-            action = world_helper.getCachedVariable(ALGCOST_DBFILE, "bestAction",
+            action = world_helper.getCachedVariable(ALGCOST_DBFILE, f"bestAction_{self.simulation.cEquipment}",
                                                     lambda: self.determineBestAction(cTrials=1000),
                                                     depFNames=["simulation.py", "equipment.py"])
 
