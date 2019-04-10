@@ -59,7 +59,7 @@ class algSmart_world:
         return (state, reward, done)
 
     def getStateMetadata(self):
-        return self.equipmentStateMetadata + (3,) * len(self.offloadActions)
+        return self.equipmentStateMetadata + (5,) * len(self.offloadActions)
 
     def getState(self):
         equipment = self.simulation.getEquipment(self.currentIndex)
@@ -69,16 +69,12 @@ class algSmart_world:
         mecState = []
         for action in self.offloadActions:
             count = (self.currentVector == action).sum()
-            frac = count/self.simulation.cEquipment
-
-            expected = 1/len(self.allActions)
-
-            if frac <= expected:
-                value = 0
-            elif frac <= 2*expected:
-                value = 1
-            else:
-                value = 2
+            if count <= 2:  #3xone to one
+                value = count
+            elif count <= 4:#two to one
+                value = 3
+            else:           #three to one
+                value = 4
             mecState.append(value)
         mecState = tuple(mecState)
 
