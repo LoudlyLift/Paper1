@@ -9,7 +9,7 @@ ALGSMART_DBFILE="./Persist/algSmart"
 
 """Wrapper around simulation.py for my proposed algorithm"""
 class algSmart_world:
-    def __init__(self, simulation: simulation.simulation, equipmentToState, equipmentStateMetadata, weights = [0,1,2,4], maxIter=35):
+    def __init__(self, simulation: simulation.simulation, equipmentToState, equipmentStateMetadata, weights = [0,2,3,4], maxIter=35):
         self.simulation = simulation
 
         self.allActions = weights
@@ -60,7 +60,7 @@ class algSmart_world:
         return (state, reward, done)
 
     def getStateMetadata(self):
-        return self.equipmentStateMetadata + (3,) * len(self.offloadActions)
+        return self.equipmentStateMetadata + (5,) * len(self.offloadActions)
 
     def getState(self):
         equipment = self.simulation.getEquipment(self.currentIndex)
@@ -70,16 +70,12 @@ class algSmart_world:
         mecState = []
         for action in self.offloadActions:
             count = (self.currentVector == action).sum()
-            frac = count/self.simulation.cEquipment
-
-            expected = len(self.allActions)
-
-            if frac <= expected:
-                value = 0
-            elif frac <= 2*expected:
-                value = 1
-            else:
-                value = 2
+            if count <= 2:  #3xone to one
+                value = count
+            elif count <= 4:#two to one
+                value = 3
+            else:           #three to one
+                value = 4
             mecState.append(value)
         mecState = tuple(mecState)
 
