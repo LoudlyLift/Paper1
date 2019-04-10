@@ -18,7 +18,6 @@ def getAlgOnePercentiles(simulation):
                                                       lambda: world_helper.computePercentiles(simulation, actions),
                                                       depFNames=["simulation.py", "equipment.py"])
 
-
 """Wrapper around simulation.py for Algorithm 1 as described in the paper
 
 NOTE: this makes the trivial optimization of rescaling MEC server CPU
@@ -30,7 +29,7 @@ class alg1_world:
         self.simulation = simulation
 
         if granularityMEC is None:
-            granularityMEC = simulation.cEquipment
+            granularityMEC = simulation.cEquipment + 1
         self.granularityMEC = granularityMEC
 
         self.granularityTC = granularityTC
@@ -73,7 +72,8 @@ class alg1_world:
         costBucket = math.floor(self.granularityTC * (cost-self.minCost) / (self.maxCost - self.minCost))
         costBucket = min(costBucket, self.granularityTC - 1)
 
-        acBucket = self.granularityMEC - sum(action)
+        ac = self.simulation.cEquipment - sum(action)
+        acBucket = round((self.granularityMEC-1) * (ac / self.simulation.cEquipment))
 
         state = (costBucket, acBucket)
 
@@ -89,7 +89,7 @@ class alg1_world:
         return (state, reward, done)
 
     def getStateMetadata(self):
-        return (self.granularityTC, self.granularityMEC+1) #+1 because legal values are [0, granularityMEC]
+        return (self.granularityTC, self.granularityMEC)
 
     def getNumActions(self):
         return len(self.possibleActions)

@@ -36,6 +36,10 @@ parser.add_argument('--equipment-power-idle', type=float, default=100e-3, help="
 parser.add_argument('--equipment-clockspeed', type=float, default=1e9, help="The equipment's CPU's clockspeed (Hz)")
 parser.add_argument('--equipment-timeenergy-ratio', type=float, default=0.5, help="1 to optimize for time, 0 to optimize for energy, intermediate values are a linear mix")
 
+#alg one
+parser.add_argument('--algone-granularity-tc',  type=int, default=8, help='The number of quantizations of the "total cost" variable in Algorithm one\'s state')
+parser.add_argument('--algone-granularity-mec', type=int, default=None, help='The number of quantizations of the mec variable in Algorithm one\'s state')
+
 args = parser.parse_args()
 
 
@@ -102,7 +106,7 @@ if args.algorithm == 'smart':
     w = algSmart_world.algSmart_world(s, equipmentToState, equipmentStateMetadata, maxIter=5*args.equipment_count)
     train_sim_callback = lambda: ql.getTrainEpisodeCount()
 elif args.algorithm == 'one':
-    w = alg1_world.alg1_world(s)
+    w = alg1_world.alg1_world(s, granularityTC=args.algone_granularity_tc, granularityMEC=args.algone_granularity_mec)
     train_sim_callback = lambda: ql.getTrainUpdateCount()
 elif args.algorithm == 'const':
     w = algConst_world.algConst_world(s)
