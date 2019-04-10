@@ -9,7 +9,7 @@ ALGSMART_DBFILE="./Persist/algSmart"
 
 """Wrapper around simulation.py for my proposed algorithm"""
 class algSmart_world:
-    def __init__(self, simulation: simulation.simulation, equipmentToState, equipmentStateMetadata, weights = [0,1,2,4], maxIter=35):
+    def __init__(self, simulation: simulation.simulation, equipmentToState, equipmentStateMetadata, weights = [0,2,3,4], maxIter=35):
         self.simulation = simulation
 
         self.allActions = weights
