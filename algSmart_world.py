@@ -71,7 +71,7 @@ class algSmart_world:
             count = (self.currentVector == action).sum()
             frac = count/self.simulation.cEquipment
 
-            expected = len(self.allActions)
+            expected = 1/len(self.allActions)
 
             if frac <= expected:
                 value = 0
