@@ -67,7 +67,7 @@ def newEquipment(arg=None) -> equipment.equipment:
                                cbInput=cbInput, cCycle=cCycle,
                                sDelayMax=sDelayMax, distance=distance)
 
-equipmentStateMetadata = (3,3,3)
+equipmentStateMetadata = (5,5,5)
 def equipmentToState(equipment):
     #NOTE: you might think that this function should go in equipment.py, but it
     #actually belongs here in config.py because it is dependent on the
@@ -76,9 +76,9 @@ def equipmentToState(equipment):
     distributions = [#"percentiler" takes the linearOffset (see below) of the
                      #actual value and returns the percentile of that value
                      #relative to the distribution that generated it
-        {"min": 300*1000, "max": 500*1000, "actual": equipment.cbInput, "granularity": 3, "percentiler": lambda x: x},
-        {"min": 900*1000000, "max": 1100*1000000, "actual": equipment.cCycle, "granularity": 3, "percentiler": lambda x: x},
-        {"min": 0, "max": 200, "actual": equipment.distance, "granularity": 3, "percentiler": lambda x: x**2},
+        {"min": 300*1000, "max": 500*1000, "actual": equipment.cbInput, "granularity": 5, "percentiler": lambda x: x},
+        {"min": 900*1000000, "max": 1100*1000000, "actual": equipment.cCycle, "granularity": 5, "percentiler": lambda x: x},
+        {"min": 0, "max": 200, "actual": equipment.distance, "granularity": 5, "percentiler": lambda x: x**2},
     ]
     states = []
     for distribution in distributions:
