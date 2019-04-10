@@ -28,7 +28,7 @@ parser.add_argument('--equipment-count', type=int, default=7, help="How much UE'
 parser.add_argument('--learning-rate', type=float, default=0.3, help="The Q-Table updates with a decaying moving average. This is the weight of the most recent observation")
 parser.add_argument('--bandwidth', type=float, default=10e6, help="The total bandwidth that is shared by all the transmitters (Hz)")
 parser.add_argument('--mec-clockspeed', type=float, default=5e9, help="The clockspeed of the MEC server's CPU (Hz)")
-parser.add_argument('--n0', type=float, default=1e-4, help="???")
+parser.add_argument('--n0', type=float, default=1e-6, help="???")
 
 #equipment config
 parser.add_argument('--equipment-power', type=float, default=500e-3, help="The transmission power of equipment transmitters")
