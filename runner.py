@@ -156,5 +156,5 @@ medianquant  = statistics.median(result["quantile"] for result in results)
 train_dur = datetime.timedelta(seconds=(t2-t1))
 
 print("RESULTS:")
-print("algorithm | # Q-Table entries | train duration |    # train ep |     # train sim | actual | quantile")
-print(f"{args.algorithm:9s} | {ql.player._table.size:17d} | {train_dur} | {ql.getTrainEpisodeCount():13d} | {train_sim_callback():15d} | {medianactual:6.2f} | {medianquant:8.2f}")
+print("algorithm | # Q-Table entries | Q-Table updates | train duration |    # train ep |     # train sim | actual | quantile")
+print(f"{args.algorithm:9s} | {ql.player._table.size:17d} | {ql.getTrainUpdateCount():15d} | {train_dur} | {ql.getTrainEpisodeCount():13d} | {train_sim_callback():15d} | {medianactual:6.2f} | {medianquant:8.2f}")
