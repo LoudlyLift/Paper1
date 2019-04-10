@@ -59,8 +59,13 @@ class qlearning:
         state_metadata = env.getStateMetadata()
         self.player = consPlayer(state_metadata, self._env.getNumActions(), config=player_config)
 
-        self._train_update_count = 0
-        self._train_episode_count = 0
+
+        if self._env.isTrainable:
+            self._train_update_count = 0
+            self._train_episode_count = 0
+        else:
+            self._train_update_count = math.nan
+            self._train_episode_count = math.nan
 
     def evaluate(self, count, log_period=1):
         """runs count episodes without updating Q-values.
@@ -76,6 +81,8 @@ class qlearning:
         returns a list of the things returned by closeEpisode
 
         """
+        if not self._env.isTrainable:
+            return []
         return self._runEpisodes(count, training=True, log_period=log_period)
 
     def _runEpisodes(self, count, training, log_period):
@@ -91,8 +98,7 @@ class qlearning:
 
                 while not done:
                     allActQs = self.player.computeQState(state_old)
-                    doRandom = numpy.random.rand(1) < self._compute_randact(self._train_episode_count)
-                    if doRandom and training:
+                    if training and numpy.random.rand(1) < self._compute_randact(self._train_episode_count):
                         act = self._env.getRandomMove()
                     else:
                         legalMoves = self._env.getLegalMoves()

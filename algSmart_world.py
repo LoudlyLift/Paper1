@@ -26,6 +26,7 @@ class algSmart_world:
         #"invalid" moves are made valid by the preclassification step
         self.legalMoves = numpy.array([True] * len(self.allActions))
 
+        self.isTrainable = True
 
     def reset(self):
         self.currentVector = numpy.array([0] * self.simulation.cEquipment)

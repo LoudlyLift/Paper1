@@ -44,6 +44,7 @@ class alg1_world:
         #"invalid" moves are made valid by the preclassification step
         self.legalMoves = numpy.array([True] * len(self.possibleActions))
 
+        self.isTrainable = True
 
     def reset(self):
         self.simulation.reinitialize()

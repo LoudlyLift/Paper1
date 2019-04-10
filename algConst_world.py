@@ -35,6 +35,8 @@ class algConst_world(alg1_world.alg1_world):
     def __init__(self, simulation: simulation.simulation, action=None, cTrials=1000):
         super().__init__(simulation)
 
+        self.isTrainable = False
+
         if action is None:
             action = world_helper.getCachedVariable(ALGCOST_DBFILE, "bestAction",
                                                     lambda: self.determineBestAction(cTrials=1000),

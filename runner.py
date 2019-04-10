@@ -106,7 +106,7 @@ elif args.algorithm == 'one':
     train_sim_callback = lambda: ql.getTrainUpdateCount()
 elif args.algorithm == 'const':
     w = algConst_world.algConst_world(s)
-    train_sim_callback = lambda: 0
+    train_sim_callback = lambda: math.nan
 elif args.algorithm.lower() == 'local' or args.algorithm.lower() == 'offload':
     if args.algorithm == args.algorithm.upper():
         #skip pre-processing step
@@ -118,7 +118,7 @@ elif args.algorithm.lower() == 'local' or args.algorithm.lower() == 'offload':
         w = algFullLocal.algFullLocal_world(s)
     elif args.algorithm.lower() == 'offload':
         w = algFullOffload.algFullOffload_world(s)
-    train_sim_callback = lambda: 0
+    train_sim_callback = lambda: math.nan
 else:
     assert(False)
 
@@ -157,4 +157,4 @@ train_dur = datetime.timedelta(seconds=(t2-t1))
 
 print("RESULTS:")
 print("algorithm | # Q-Table entries | train duration |    # train ep |     # train sim | actual | quantile")
-print(f"{args.algorithm:9s} | {ql.player._table.size:17d} | {train_dur} | {ql.getTrainEpisodeCount():13d} | {train_sim_callback():15d} | {medianactual:6.2f} | {medianquant:8.2f}")
+print(f"{args.algorithm:9s} | {ql.player._table.size:17d} | {train_dur} | {ql.getTrainEpisodeCount():13} | {train_sim_callback():15} | {medianactual:6.2f} | {medianquant:8.2f}")
