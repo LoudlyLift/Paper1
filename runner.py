@@ -35,6 +35,7 @@ parser.add_argument('--equipment-power', type=float, default=500e-3, help="The t
 parser.add_argument('--equipment-power-idle', type=float, default=100e-3, help="The power of equipment transmitters when idle")
 parser.add_argument('--equipment-clockspeed', type=float, default=1e9, help="The equipment's CPU's clockspeed (Hz)")
 parser.add_argument('--equipment-timeenergy-ratio', type=float, default=0.5, help="1 to optimize for time, 0 to optimize for energy, intermediate values are a linear mix")
+parser.add_argument('--equipment-max-delay', type=float, default=1, help="The maximum allowable delay in seconds (constant for all equipment)")
 
 #alg one
 parser.add_argument('--algone-granularity-tc',  type=int, default=8, help='The number of quantizations of the "total cost" variable in Algorithm one\'s state')
@@ -60,9 +61,9 @@ def newEquipment(arg=None) -> equipment.equipment:
 
     #TODO: the paper doesn't specify how to initalize these?
     gain=numpy.random.rayleigh(distance)
-    sDelayMax = 1000 #when offloading, just uploading can take 25+ seconds
-                     #depending on randomness... (All tasks can be processed
-                     #locally in < 1.5 sec...)
+    sDelayMax = args.equipment_max_delay #when offloading, just uploading can take 25+ seconds
+                                         #depending on randomness... (All tasks can be processed
+                                         #locally in < 1.5 sec...)
 
     return equipment.equipment(power=power, power_waiting=power_waiting,
                                gain=gain, frequency=freq,
