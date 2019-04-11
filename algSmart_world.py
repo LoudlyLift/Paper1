@@ -49,13 +49,10 @@ class algSmart_world:
 
         done = self.iteration == self.maxIter
 
-        if done:
-            self._prior_cost = self.simulation.computeCost(self.currentVector)
-            self._prior_quantile = numpy.searchsorted(self.percentiles, self._prior_cost) / (len(self.percentiles)-1)
+        self._prior_cost = self.simulation.computeCost(self.currentVector)
+        self._prior_quantile = numpy.searchsorted(self.percentiles, self._prior_cost) / (len(self.percentiles)-1)
 
-            reward = (100 * (1-self._prior_quantile)) ** 4
-        else:
-            reward = 0
+        reward = ((10 * (1-self._prior_quantile)) ** 3)/10
 
         return (state, reward, done)
 
