@@ -24,6 +24,8 @@ class simulation:
         self.consEquipment = consEquipment
         self.consEquipmentArgs = consEquipmentArgs
 
+        self.computeCount = 0
+
         self.reinitialize()
 
     def reinitialize(self):
@@ -31,6 +33,7 @@ class simulation:
 
         """
         self._equipment = [self.consEquipment(self.consEquipmentArgs) for i in range(self.cEquipment)]
+
 
     def getEquipment(self, i):
         """Returns the i-th equipment
@@ -48,6 +51,7 @@ class simulation:
 
         """
         assert(len(allocationWeights) == self.cEquipment)
+        self.computeCount += 1
 
         cOffloaded = numpy.count_nonzero(allocationWeights)
         totalWeight = sum(allocationWeights)

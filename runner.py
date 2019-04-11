@@ -106,13 +106,10 @@ s = smartSimulation.SmartSimulation(bandwidth=args.bandwidth, cEquipment=args.eq
 
 if args.algorithm == 'smart':
     w = algSmart_world.algSmart_world(s, equipmentToState, equipmentStateMetadata, maxIter=5*args.equipment_count)
-    train_sim_callback = lambda: ql.getTrainEpisodeCount()
 elif args.algorithm == 'one':
     w = alg1_world.alg1_world(s, granularityTC=args.algone_granularity_tc, granularityMEC=args.algone_granularity_mec)
-    train_sim_callback = lambda: ql.getTrainUpdateCount()
 elif args.algorithm == 'const':
     w = algConst_world.algConst_world(s)
-    train_sim_callback = lambda: math.nan
 elif args.algorithm.lower() == 'local' or args.algorithm.lower() == 'offload':
     if args.algorithm == args.algorithm.upper():
         #skip pre-processing step
@@ -124,7 +121,6 @@ elif args.algorithm.lower() == 'local' or args.algorithm.lower() == 'offload':
         w = algFullLocal.algFullLocal_world(s)
     elif args.algorithm.lower() == 'offload':
         w = algFullOffload.algFullOffload_world(s)
-    train_sim_callback = lambda: math.nan
 elif args.algorithm == 'conventional':
     conventional.run(s, args.eval_episodes)
     exit(0)
@@ -156,6 +152,8 @@ print("Training Q-Table")
 ql.train(args.train_episodes, log_period=args.log_period)
 t2 = time.time()
 
+train_sum = s.computeCount
+
 print("Evaluating Q-Table")
 results = ql.evaluate(args.eval_episodes)
 
@@ -166,4 +164,7 @@ train_dur = datetime.timedelta(seconds=(t2-t1))
 
 print("RESULTS:")
 print("algorithm | # Q-Table entries | Q-Table updates | train duration |    # train ep |     # train sim | actual | quantile")
-print(f"{args.algorithm:9s} | {ql.player._table.size:17d} | {ql.getTrainUpdateCount():15} | {train_dur} | {ql.getTrainEpisodeCount():13} | {train_sim_callback():15} | {medianactual:6.2f} | {medianquant:8.2f}")
+print(f"{args.algorithm:9s} | {ql.player._table.size:17d} | {ql.getTrainUpdateCount():15} | {train_dur} | {ql.getTrainEpisodeCount():13} | {train_sum:15} | {medianactual:6.2f} | {medianquant:8.2f}")
+
+import pdb; pdb.set_trace()
+foo=1+1
