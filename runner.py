@@ -12,6 +12,7 @@ import algConst_world
 import algFullLocal
 import algFullOffload
 import algSmart_world
+import conventional
 import equipment
 import qlearning
 import qtable
@@ -19,7 +20,7 @@ import simulation
 import smartSimulation
 
 parser = argparse.ArgumentParser(description='Run edge computing simulations')
-parser.add_argument('algorithm', choices=['one', 'smart', 'const', 'local', 'LOCAL', 'offload', 'OFFLOAD'])
+parser.add_argument('algorithm', choices=['one', 'smart', 'const', 'local', 'LOCAL', 'offload', 'OFFLOAD', 'conventional'])
 parser.add_argument('--log-period', type=int, default=100, help="How episodes to go between updates to the console")
 parser.add_argument('--train-episodes', type=int, default=10000, help="How many episodes to perform during training")
 parser.add_argument('--eval-episodes', type=int, default=1000, help="How many episodes to perform during evaluation")
@@ -124,6 +125,9 @@ elif args.algorithm.lower() == 'local' or args.algorithm.lower() == 'offload':
     elif args.algorithm.lower() == 'offload':
         w = algFullOffload.algFullOffload_world(s)
     train_sim_callback = lambda: math.nan
+elif args.algorithm == 'conventional':
+    conventional.run(s, args.eval_episodes)
+    exit(0)
 else:
     assert(False)
 
