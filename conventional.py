@@ -29,11 +29,12 @@ def run_trials(simulation, cTrials, frac):
 def computeBestFrac(simulation, fracs, cTrials=1000):
     results = []
     for frac in fracs:
+        print(f"{frac}: ", end="")
         results_ = run_trials(simulation, cTrials=cTrials, frac=frac)
         result = statistics.median(results_)
+        print(result)
 
         results.append(result)
-    print(f"Performance of different fracs: {results}")
     bestFracIndex = numpy.argmin(results)
     return fracs[bestFracIndex]
 
