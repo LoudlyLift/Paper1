@@ -127,11 +127,11 @@ elif args.algorithm == 'conventional':
 else:
     assert(False)
 
-x1 = 10000
+x1 = 100e3
 y1 = 1
 
-x2 = 15000
-y2 = 0.1
+x2 = 200e3
+y2 = 0.2
 assert(x1 <= x2)
 assert(0 <= y2 and y2 <= y1 and y1 <= 1)
 def computeRandAct(episode: int) -> int:
