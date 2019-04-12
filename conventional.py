@@ -41,7 +41,7 @@ def computeBestFrac(simulation, fracs, cTrials=1000):
 def run(simulation, cEpisodes):
     bestFrac = world_helper.getCachedVariable(ALGCONVENTIONAL_DBFILE,
                                               f"bestFrac_{simulation.cEquipment}",
-                                              lambda: computeBestFrac(simulation, numpy.arange(0, 1.001, 0.1), cTrials=10000),
+                                              lambda: computeBestFrac(simulation, numpy.arange(0, 1.001, 0.1), cTrials=100000),
                                               depFNames=["conventional.py"])
     print(f"Using frac {bestFrac}")
 
