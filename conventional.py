@@ -39,6 +39,7 @@ def computeBestFrac(simulation, fracs, cTrials=1000):
     return fracs[bestFracIndex]
 
 def run(simulation, cEpisodes):
+    percentiles = world_helper.getStandardPercentiles(simulation)
     bestFrac = world_helper.getCachedVariable(ALGCONVENTIONAL_DBFILE,
                                               f"bestFrac_{simulation.cEquipment}",
                                               lambda: computeBestFrac(simulation, numpy.arange(0, 1.001, 0.1), cTrials=100000),
@@ -47,4 +48,12 @@ def run(simulation, cEpisodes):
 
     results = run_trials(simulation, cEpisodes, bestFrac)
     result = statistics.median(results)
-    print(f"Median of conventional algorithm is {result:.2f}")
+    quantile = numpy.searchsorted(percentiles, result) / (len(percentiles)-1)
+
+    print( "algorithm    │ actual │ quantile │")
+    print( "─────────────┼────────┼──────────┼")
+    print(f"conventional │ {result:6.2f} │ {quantile:8.2f} │")
+
+
+    print("RESULTS:")
+    print(f"Median of conventional algorithm is {result:.2f}; quantile {quantile}")
