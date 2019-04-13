@@ -166,8 +166,9 @@ medianquant  = statistics.median(result["quantile"] for result in results)
 train_dur = datetime.timedelta(seconds=(t2-t1))
 
 print("RESULTS:")
-print("algorithm | # Q-Table entries | Q-Table updates | train duration |    # train ep |     # train sim | actual | quantile")
-print(f"{args.algorithm:9s} | {ql.player._table.size:17d} | {ql.getTrainUpdateCount():15} | {train_dur} | {ql.getTrainEpisodeCount():13} | {train_sum:15} | {medianactual:6.2f} | {medianquant:8.2f}")
+print("algorithm    │ actual │ quantile │ # Q-Table entries │ Q-Table updates │ train duration │    # train ep │     # train sim")
+print("─────────────┼────────┼──────────┼───────────────────┼─────────────────┼────────────────┼───────────────┼────────────────")
+print(f"{args.algorithm:12s} │ {medianactual:6.2f} │ {medianquant:8.2f} │ {ql.player._table.size:17d} │ {ql.getTrainUpdateCount():15} │ {train_dur} │ {ql.getTrainEpisodeCount():13} │ {train_sum:15}")
 
 import pdb; pdb.set_trace()
 foo=1+1
